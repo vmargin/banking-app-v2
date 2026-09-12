@@ -1,0 +1,27 @@
+name: Learning task
+description: One concept with a verifiable behaviour
+title: "[Learning] "
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome and concept
+      description: What should work, and what will you understand?
+    validations:
+      required: true
+  - type: textarea
+    id: reasoning
+    attributes:
+      label: Reasoning checkpoint
+      description: Explain your design before writing code.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria and edge cases
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Attempt, run evidence and explanation
+      description: Link your commit, actual output, tests, and what you can explain.

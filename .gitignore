@@ -1,0 +1,22 @@
+/target/
+/.idea/
+*.iml
+/.vscode/
+/.local/
+.env
+.env.*
+!.env.example
+*.log
+*.mv.db
+*.trace.db
+*.pem
+*.key
+
+# Local assessment notes and generated evidence
+/docs/
+/output/
+/tmp/
+/design/
+/BANKING-APP-GUIDE.md
+/SETUP-REPORT.md
+/START-TOMORROW.md

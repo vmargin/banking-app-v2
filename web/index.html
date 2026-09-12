@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CASH-G Neon Ledger banking dashboard prototype">
+  <title>CASH-G — Neon Ledger</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="dashboard">
+  <div class="ambient-orb ambient-orb-one"></div>
+  <div class="ambient-orb ambient-orb-two"></div>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <div class="sidebar-top">
+        <a class="brand" href="index.html" aria-label="CASH-G overview">
+          <span class="brand-mark">C</span><span class="brand-word">CASH<span>-G</span></span>
+        </a>
+        <span class="environment-pill">LOCAL DEMO</span>
+      </div>
+      <div class="sidebar-label">Workspace</div>
+      <nav class="nav-list">
+        <button class="nav-link is-active" type="button" data-view-target="overview-view" aria-current="page"><span class="nav-glyph">◈</span><span>Overview</span></button>
+        <button class="nav-link" type="button" data-view-target="transactions-view"><span class="nav-glyph">↕</span><span>Transactions</span></button>
+      </nav>
+      <div class="sidebar-label side-label-lower">Quick move</div>
+      <div class="side-actions">
+        <button class="side-action" type="button" data-open-modal="cash-in"><span class="side-action-icon mint">＋</span><span>Add funds</span></button>
+        <button class="side-action" type="button" data-open-modal="transfer"><span class="side-action-icon coral">↗</span><span>Send money</span></button>
+      </div>
+      <div class="sidebar-spacer"></div>
+      <div class="side-note"><span class="pulse-dot"></span><span>All systems operational</span></div>
+      <div class="profile-card">
+        <span class="avatar">TU</span>
+        <span class="profile-copy"><strong>Test User</strong><small>Personal account</small></span>
+        <span class="profile-menu">•••</span>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="mobile-menu" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
+        <div class="breadcrumb"><span class="breadcrumb-dim">CASH-G</span><span>/</span><strong>Overview</strong></div>
+        <div class="topbar-actions">
+          <button class="icon-button" type="button" data-toggle-balance aria-label="Hide balance"><span aria-hidden="true">◉</span></button>
+          <button class="icon-button has-notification" type="button" aria-label="View notifications"><span aria-hidden="true">◌</span><i></i></button>
+          <a class="button button-ghost" href="login.html">Log out</a>
+        </div>
+      </header>
+
+      <section class="view is-visible" id="overview-view" data-view="overview-view">
+        <div class="page-intro">
+          <div><p class="eyebrow">SATURDAY · SEPTEMBER 12, 2026</p><h1>Good morning, Test.</h1><p class="intro-copy">Here’s the signal from your money today.</p></div>
+          <span class="live-status"><span class="pulse-dot"></span> Account active</span>
+        </div>
+
+        <section class="hero-grid" aria-label="Account balance and actions">
+          <article class="hero-balance">
+            <div class="hero-art" aria-hidden="true"></div>
+            <div class="hero-content">
+              <div class="hero-label-row"><span class="eyebrow eyebrow-light">TOTAL AVAILABLE</span><span class="hero-chip">PHP · PERSONAL</span></div>
+              <p class="hero-amount" data-balance>PHP 2,800.00</p>
+              <div class="hero-bottom"><span>Updated moments ago</span><span class="positive-text">↑ 8.4% <em>this month</em></span></div>
+            </div>
+          </article>
+          <article class="signal-card">
+            <div class="signal-top"><span class="eyebrow">YOUR MONEY SIGNAL</span><span class="signal-spark">✦</span></div>
+            <div class="signal-number">+<span data-money-in>4,500</span></div>
+            <p>Money in this month</p>
+            <div class="signal-line"><span style="width: 78%"></span></div>
+            <small>More movement than your last cycle</small>
+          </article>
+        </section>
+
+        <section class="summary-row" aria-label="Account summary">
+          <article class="summary-card"><span class="summary-icon mint">↗</span><span><small>Money in</small><strong>PHP <span data-money-in>4,500</span><i>.00</i></strong><em>↑ 12.2%</em></span></article>
+          <article class="summary-card"><span class="summary-icon coral">↘</span><span><small>Money out</small><strong>PHP <span data-money-out>1,700</span><i>.00</i></strong><em class="coral-text">↓ 3.1%</em></span></article>
+          <article class="summary-card"><span class="summary-icon violet">◌</span><span><small>Transactions</small><strong><span data-transaction-count>23</span> <i>this month</i></strong><em class="neutral-text">All reconciled</em></span></article>
+        </section>
+
+        <section class="dashboard-grid">
+          <div class="dashboard-main-column">
+            <div class="section-heading"><div><p class="eyebrow">FAST LANE</p><h2>Move money</h2></div><span class="heading-note">Choose an action</span></div>
+            <div class="action-grid">
+              <button class="action-card action-primary" type="button" data-open-modal="cash-in"><span class="action-number">01</span><span class="action-icon-large mint">＋</span><span class="action-text"><strong>Cash in</strong><small>Add money to your account</small></span><span class="action-arrow">↗</span></button>
+              <button class="action-card action-secondary" type="button" data-open-modal="transfer"><span class="action-number">02</span><span class="action-icon-large coral">↗</span><span class="action-text"><strong>Transfer</strong><small>Send money to another user</small></span><span class="action-arrow">↗</span></button>
+              <button class="action-card action-secondary" type="button" data-view-target="transactions-view"><span class="action-number">03</span><span class="action-icon-large violet">▤</span><span class="action-text"><strong>History</strong><small>Review your account activity</small></span><span class="action-arrow">↗</span></button>
+            </div>
+
+            <div class="section-heading activity-heading"><div><p class="eyebrow">MONEY TRAIL</p><h2>Recent activity</h2></div><button class="text-button" type="button" data-view-target="transactions-view">View all <span>↗</span></button></div>
+            <div class="activity-list" data-activity-list></div>
+          </div>
+
+          <aside class="dashboard-side-column">
+            <article class="pattern-card">
+              <div class="section-heading compact"><div><p class="eyebrow">MONTHLY PULSE</p><h2>Steady signal.</h2></div><span class="corner-mark">✦</span></div>
+              <p class="pattern-copy">Your balance is trending upward. The habit is working.</p>
+              <div class="bars" aria-label="Balance trend rising over six weeks" role="img"><span style="height: 32%"></span><span style="height: 43%"></span><span style="height: 38%"></span><span style="height: 57%"></span><span style="height: 64%"></span><span class="bar-highlight" style="height: 88%"></span></div>
+              <div class="chart-meta"><span>Aug 01</span><strong>+8.4%</strong><span>Sep 12</span></div>
+            </article>
+            <article class="account-card">
+              <div class="section-heading compact"><div><p class="eyebrow">ACCOUNT</p><h2>Personal</h2></div><span class="verified-mark">✓</span></div>
+              <dl><div><dt>Holder</dt><dd>Test User</dd></div><div><dt>Mobile</dt><dd>09•••••1234</dd></div><div><dt>Status</dt><dd class="active-text"><span class="pulse-dot"></span> Active</dd></div></dl>
+            </article>
+            <article class="protection-card"><span class="protection-icon">✓</span><span><strong>Protected locally</strong><small>Demo data stays on this device.</small></span><span class="action-arrow">↗</span></article>
+          </aside>
+        </section>
+      </section>
+
+      <section class="view" id="transactions-view" data-view="transactions-view" hidden>
+        <div class="page-intro"><div><p class="eyebrow">MONEY TRAIL</p><h1>Transactions.</h1><p class="intro-copy">Every movement, in one readable record.</p></div><button class="button button-primary" type="button" data-open-modal="transfer">New transfer <span>↗</span></button></div>
+        <div class="transaction-toolbar"><div class="filter-tabs"><button class="filter-tab is-active" type="button" data-filter="all">All</button><button class="filter-tab" type="button" data-filter="in">Money in</button><button class="filter-tab" type="button" data-filter="out">Money out</button></div><label class="search-field"><span aria-hidden="true">⌕</span><input type="search" placeholder="Search transactions" data-search></label></div>
+        <div class="transaction-summary"><span><strong data-transaction-count>23</strong> total records</span><span class="reconciled"><span class="pulse-dot"></span> All reconciled</span></div>
+        <div class="full-activity-list" data-full-activity-list></div>
+      </section>
+
+      <footer class="footer"><span>CASH-G / NEON LEDGER</span><span>Visual prototype · Simulated actions only</span></footer>
+    </main>
+  </div>
+
+  <div class="toast" data-toast role="status" aria-live="polite"></div>
+  <dialog class="modal" data-modal="cash-in"><button class="modal-close" type="button" data-close-modal aria-label="Close">×</button><p class="eyebrow">FAST LANE / 01</p><h2>Add money.</h2><p class="modal-copy">Record a cash-in and update the demo balance.</p><form data-modal-form="cash-in"><label for="cash-amount">Amount in PHP</label><input id="cash-amount" name="amount" type="number" min="1" step="0.01" placeholder="0.00" required><label for="cash-details">Details</label><input id="cash-details" name="details" type="text" value="Cash-in" required><button class="button button-primary button-full" type="submit">Add funds <span>↗</span></button></form></dialog>
+  <dialog class="modal" data-modal="transfer"><button class="modal-close" type="button" data-close-modal aria-label="Close">×</button><p class="eyebrow">FAST LANE / 02</p><h2>Send money.</h2><p class="modal-copy">This demo will review the transfer before it is recorded.</p><form data-modal-form="transfer"><label for="transfer-recipient">Recipient mobile number</label><input id="transfer-recipient" name="recipient" type="tel" inputmode="numeric" placeholder="09XXXXXXXXX" required><label for="transfer-amount">Amount in PHP</label><input id="transfer-amount" name="amount" type="number" min="1" step="0.01" placeholder="0.00" required><button class="button button-primary button-full" type="submit">Review transfer <span>↗</span></button></form></dialog>
+  <script src="js/app.js" defer></script>
+</body>
+</html>
