@@ -1,5 +1,6 @@
 package com.vmargin.banking;
 
+import com.vmargin.banking.web.BankingWebApplication;
 import com.vmargin.banking.repository.JdbcUserRepository;
 import com.vmargin.banking.repository.JdbcCashInRepository;
 import com.vmargin.banking.repository.JdbcTransactionRepository;
@@ -21,6 +22,11 @@ public final class Main {
     }
 
     public static void main(String[] args) {
+        if (!hasSwingFlag(args)) {
+            BankingWebApplication.main(args);
+            return;
+        }
+
         JdbcUserRepository userRepository = new JdbcUserRepository();
         JdbcTransactionRepository transactionRepository = new JdbcTransactionRepository();
         LoginService loginService = new LoginService(userRepository);
@@ -30,21 +36,17 @@ public final class Main {
         RegistrationService registrationService = new RegistrationService(userRepository);
         AdminService adminService = new AdminService(userRepository, transactionRepository);
         configureLookAndFeel();
-        SwingUtilities.invokeLater(
-            () -> launchUi(
-                args,
-                loginService,
-                cashInService,
-                transferService,
-                historyService,
-                registrationService,
-                adminService
-            )
-        );
+        SwingUtilities.invokeLater(() -> launchSwing(
+            loginService,
+            cashInService,
+            transferService,
+            historyService,
+            registrationService,
+            adminService
+        ));
     }
 
-    private static void launchUi(
-        String[] args,
+    private static void launchSwing(
         LoginService loginService,
         CashInService cashInService,
         TransferService transferService,
@@ -52,18 +54,18 @@ public final class Main {
         RegistrationService registrationService,
         AdminService adminService
     ) {
-        if (args.length > 0 && "--swing".equalsIgnoreCase(args[0])) {
-            new LoginFrame(
-                loginService,
-                cashInService,
-                transferService,
-                historyService,
-                registrationService,
-                adminService
-            ).setVisible(true);
-            return;
-        }
-        new WebUiFrame().setVisible(true);
+        new LoginFrame(
+            loginService,
+            cashInService,
+            transferService,
+            historyService,
+            registrationService,
+            adminService
+        ).setVisible(true);
+    }
+
+    private static boolean hasSwingFlag(String[] args) {
+        return args.length > 0 && "--swing".equalsIgnoreCase(args[0]);
     }
 
     private static void configureLookAndFeel() {

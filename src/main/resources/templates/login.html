@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Sign in | CASH-G</title><link rel="stylesheet" href="/css/app.css"></head>
+<body class="auth-page">
+<main class="auth-shell">
+  <section class="auth-hero"><div class="logo"><span>C</span> CASH-G</div><p class="eyebrow">LOCAL LEDGER / PERSONAL BANKING</p><h1>Your money, with a clearer signal.</h1><p class="muted">A focused banking workspace built around understandable transactions and calm decisions.</p><div class="signal"><i></i><span>Spring Boot web application</span></div></section>
+  <section class="auth-card"><p class="eyebrow">WELCOME BACK</p><h2>Sign in to CASH-G.</h2><p class="muted">Use your registered mobile number and four-digit PIN.</p>
+    <div class="alert error" th:if="${error}" th:text="${error}"></div><div class="alert success" th:if="${success}" th:text="${success}"></div>
+    <form method="post" action="/login" class="stack"><label>Mobile number<input name="mobile" type="tel" inputmode="numeric" placeholder="09XXXXXXXXX" required></label><label>PIN<input name="pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required></label><button class="primary" type="submit">Sign in <span>↗</span></button></form>
+    <div class="alert success"><strong>Local demo accounts</strong><p>Admin: <code>09990000000</code> / <code>1234</code></p><p>Demo user: <code>09990000111</code> / <code>4321</code></p><small>Local educational database only.</small></div>
+    <p class="switch">New to CASH-G? <a href="/register">Create an account</a></p>
+  </section>
+</main>
+</body></html>

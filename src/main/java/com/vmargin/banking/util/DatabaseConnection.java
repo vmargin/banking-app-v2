@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public final class DatabaseConnection {
     private static final String DEFAULT_URL =
-        "jdbc:postgresql://localhost:5432/banking_app";
+        "jdbc:postgresql://localhost:5432/banking_app_v2";
 
     private DatabaseConnection() {
     }

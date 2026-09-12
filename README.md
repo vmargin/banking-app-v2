@@ -1,24 +1,33 @@
 # JCash Banking App v2
 
-A portfolio evolution of the JCash banking simulator. Version 2 keeps the Java services, JDBC, PostgreSQL model, and tests while introducing a bold HTML/CSS/JavaScript interface hosted inside the desktop app through JavaFX WebView.
+A portfolio evolution of the JCash banking simulator. Version 2 keeps the Java services, JDBC, PostgreSQL model, and tests while introducing a polished Thymeleaf web interface served by Spring Boot.
 
 ## Current direction
 
-The visual WebView shell is connected to the desktop launcher. The original Swing
-screen remains available with the --swing argument while the HTML flows are
-iterated safely. The next integration step is mapping the HTML forms to the
-existing Java services through a small, explicit JavaScript bridge.
+The Spring Boot application serves the web UI and connects its forms to the existing
+Java services. The original Swing screen remains available with the --swing argument
+as a legacy desktop fallback.
 
 ## Run locally
 
-Install Temurin JDK 21 and PostgreSQL, then run:
+Install Temurin JDK 21 and PostgreSQL. Configure a separate v2 database connection
+before using login or banking actions:
+
+```powershell
+$env:BANKING_DB_USER = "postgres"
+$env:BANKING_DB_PASSWORD = "your-local-postgres-password"
+```
+
+The default database is `banking_app_v2`; the v1 `banking_app` database is not used.
+Use `scripts/setup-v2-db.ps1` after setting the variables above, then run:
 
 ```powershell
 ./scripts/dev.ps1 -Task verify
 ./scripts/dev.ps1 -Task run
 ```
 
-The default launcher opens the WebView interface. To use the original Swing UI:
+The default launcher starts the Spring Boot web application at http://localhost:8080/login.
+To use the original Swing UI:
 
 ```powershell
 ./mvnw.cmd --batch-mode compile exec:java -Dexec.mainClass=com.vmargin.banking.Main -Dexec.args=--swing

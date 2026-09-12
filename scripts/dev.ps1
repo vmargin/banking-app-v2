@@ -19,7 +19,7 @@ try {
             test { & .\mvnw.cmd --batch-mode test }
             verify { & .\mvnw.cmd --batch-mode verify }
             package { & .\mvnw.cmd --batch-mode package }
-            run { & .\mvnw.cmd --batch-mode compile exec:java '-Dexec.mainClass=com.vmargin.banking.Main' }
+            run { & .\mvnw.cmd --batch-mode spring-boot:run }
         }
         if ($LASTEXITCODE -ne 0) { throw "Maven task '$Task' failed with exit code $LASTEXITCODE." }
     } finally { Pop-Location }
