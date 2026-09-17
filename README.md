@@ -2,6 +2,8 @@
 
 A portfolio evolution of the JCash banking simulator. Version 2 keeps the Java services, JDBC, PostgreSQL model, and tests while introducing a Counterfoil Desk web interface served by Spring Boot and Thymeleaf.
 
+**Live demo:** https://banking-app-v2.onrender.com/login
+
 ## Current direction
 
 The Spring Boot application serves the web UI and connects its forms to the existing
