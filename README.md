@@ -65,7 +65,8 @@ BANKING_DB_USER=postgres
 BANKING_DB_PASSWORD=<supabase-database-password>
 ```
 
-Open the Render URL at `/login`. The schema runs during application startup.
+Run `src/main/resources/schema.sql` once against the Neon database before the
+first login. Open the Render URL at `/login` after deployment.
 Render Free may sleep after inactivity, so the first request can take longer.
 
 ## Structure
