@@ -1,7 +1,39 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Create account | CASH-G</title><link rel="stylesheet" href="/css/app.css"></head>
-<body class="auth-page">
-<main class="auth-shell"><section class="auth-hero register-hero"><div class="logo"><span>C</span> CASH-G</div><p class="eyebrow">START WITH A CLEAR SIGNAL</p><h1>Build a steadier money habit.</h1><p class="muted">Set up a local account and keep every move easy to understand.</p><div class="signal"><i></i><span>Simple setup / clear records</span></div></section>
-<section class="auth-card"><p class="eyebrow">GET STARTED</p><h2>Create your account.</h2><p class="muted">Three details. One local banking profile.</p><div class="alert error" th:if="${error}" th:text="${error}"></div><form method="post" action="/register" class="stack"><label>Full name<input name="fullName" type="text" placeholder="Enter your full name" required></label><label>Mobile number<input name="mobile" type="tel" inputmode="numeric" placeholder="09XXXXXXXXX" required></label><label>Create a four-digit PIN<input name="pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" required></label><button class="primary" type="submit">Create account <span>↗</span></button></form><p class="switch">Already have an account? <a href="/login">Sign in</a></p></section></main>
-</body></html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create an account in the CASH-G educational banking simulator.">
+  <title>Create account | CASH-G</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="reference-auth-page">
+  <a class="skip-link" href="#main-content">Skip to account creation</a>
+  <main id="main-content" class="reference-auth-shell">
+    <aside class="reference-auth-rail">
+      <a class="reference-brand" href="/login" aria-label="CASH-G sign in">CASH-G</a>
+      <p>Learn.<br>Practice.<br>Record.</p>
+      <nav class="reference-nav" aria-label="Authentication navigation"><a href="/login">Sign in</a><a href="/register" aria-current="page">Create account</a></nav>
+      <small>Local educational banking simulator</small>
+    </aside>
+    <section class="reference-auth-card" aria-labelledby="register-title">
+      <p class="reference-kicker">Start an account record</p>
+      <h1 id="register-title">Create a local account.</h1>
+      <p>Use test details only. This simulator is not connected to a bank.</p>
+      <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
+      <form method="post" action="/register" class="reference-auth-form">
+        <label for="full-name">Full name</label>
+        <input id="full-name" name="fullName" type="text" autocomplete="name" placeholder="Enter your full name" required>
+        <label for="mobile">Mobile number</label>
+        <input id="mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="tel" pattern="09[0-9]{9}" minlength="11" maxlength="11" placeholder="09XXXXXXXXX" aria-describedby="mobile-hint" required>
+        <p id="mobile-hint" class="reference-input-hint">Use 11 digits, starting with 09.</p>
+        <label for="pin">Create a four-digit PIN</label>
+        <input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="new-password" pattern="[0-9]{4}" minlength="4" maxlength="4" placeholder="••••" aria-describedby="pin-hint" required>
+        <p id="pin-hint" class="reference-input-hint">Use four digits for this local test account.</p>
+        <button class="reference-primary" type="submit">Create account record <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="reference-auth-switch">Already registered? <a href="/login">Open your account desk</a></p>
+    </section>
+  </main>
+</body>
+</html>

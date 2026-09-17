@@ -1,8 +1,122 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dashboard | CASH-G</title><link rel="stylesheet" href="/css/app.css"></head>
-<body class="app-page"><header class="topbar"><div class="logo"><span>C</span> CASH-G</div><form method="post" action="/logout"><button class="link-button" type="submit">Log out</button></form></header>
-<main class="dashboard"><div class="welcome"><div><p class="eyebrow">PERSONAL OVERVIEW</p><h1>Good to see you, <span th:text="${user.fullName}">there</span>.</h1><p class="muted">Your local account, in one clear view.</p></div><div class="account-chip"><span>ACCOUNT</span><strong th:text="${user.bankAccount.accountId}">ACC-000</strong></div></div>
-<div class="alert error" th:if="${error}" th:text="${error}"></div><section class="balance-card"><div><p class="eyebrow">AVAILABLE BALANCE</p><div class="balance" th:text="${#numbers.formatDecimal(user.balance, 1, 2)}">0.00</div><p class="balance-label">Philippine peso · updated from your account</p></div><div class="balance-mark">₱</div></section>
-<section class="content-grid"><div class="panel"><div class="panel-heading"><div><p class="eyebrow">RECENT ACTIVITY</p><h2>Your ledger</h2></div></div><div class="empty" th:if="${#lists.isEmpty(transactions)}">No transactions yet. Add funds to start your ledger.</div><div class="transaction" th:each="transaction : ${transactions}"><div class="transaction-icon" th:text="${transaction.type.name() == 'CASH_IN' ? '↓' : '↗'}">↓</div><div><strong th:text="${transaction.details}">Activity</strong><small th:text="${#temporals.format(transaction.occurredAt, 'MMM d, yyyy · h:mm a')}">Today</small></div><b th:text="${transaction.type.name() == 'CASH_IN' ? '+ ₱' + transaction.amount : '− ₱' + transaction.amount}">+ ₱0.00</b></div></div>
-<aside class="panel action-panel"><p class="eyebrow">QUICK ACTION</p><h2>Move with intention.</h2><form method="post" action="/cash-in" class="stack"><label>Add money<input name="amount" type="number" min="0.01" step="0.01" placeholder="Amount in PHP" required></label><label>Details<input name="details" type="text" value="Cash-in" required></label><button class="primary" type="submit">Add funds</button></form><hr><form method="post" action="/transfer" class="stack"><label>Recipient mobile<input name="recipient" type="tel" placeholder="09XXXXXXXXX" required></label><label>Amount<input name="amount" type="number" min="0.01" step="0.01" placeholder="Amount in PHP" required></label><button class="secondary" type="submit">Send money</button></form></aside></section></main></body></html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CASH-G account desk and transaction record.">
+  <title>Account desk | CASH-G</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="app-page reference-page">
+  <a class="skip-link" href="#records">Skip to transaction records</a>
+  <div class="reference-shell">
+    <aside class="reference-rail" aria-label="Account navigation">
+      <a class="reference-brand" href="/dashboard" aria-label="CASH-G account desk">CASH-G</a>
+      <p class="reference-tagline">Practice today.<br>Build better records tomorrow.</p>
+      <nav class="reference-nav">
+        <a href="#overview" aria-current="page">Account desk</a>
+        <a href="#records">Records</a>
+        <a href="#actions">New entry</a>
+      </nav>
+      <div class="reference-rail-note">
+        <strong>Local educational simulator</strong>
+        <span>PHP account records</span>
+      </div>
+      <form method="post" action="/logout" class="reference-logout">
+        <button type="submit">Log out</button>
+      </form>
+    </aside>
+    <div class="reference-workspace">
+      <header class="reference-topbar">
+        <div>
+          <p class="reference-kicker">Counterfoil Desk</p>
+          <h1>Welcome back, <span th:text="${user.fullName}">account holder</span>.</h1>
+        </div>
+        <dl class="reference-account">
+          <div><dt>Account</dt><dd th:text="${user.bankAccount.accountId}">ACC-000</dd></div>
+          <div><dt>Currency</dt><dd>PHP</dd></div>
+        </dl>
+      </header>
+      <main class="reference-main">
+        <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
+        <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
+        <section id="overview" class="reference-overview" aria-label="Account overview">
+          <article class="reference-balance">
+            <span>Available balance</span>
+            <strong th:text="${'₱' + #numbers.formatDecimal(user.balance, 1, 2)}">₱0.00</strong>
+            <p>Current balance before a new record is confirmed.</p>
+          </article>
+          <article class="reference-stat">
+            <span>Transaction records</span>
+            <strong th:text="${#lists.size(transactions)}">0</strong>
+            <p>Settled entries in this account history.</p>
+          </article>
+          <article class="reference-callout">
+            <p class="reference-kicker">Prepare a transfer</p>
+            <h2>Review before you record.</h2>
+            <p>Transfers pause for a visible counterfoil before the Java service records them.</p>
+            <a href="#actions">Prepare a transfer <span aria-hidden="true">→</span></a>
+          </article>
+        </section>
+        <section class="reference-grid">
+          <section id="records" class="reference-panel reference-records" aria-labelledby="records-title">
+            <header class="reference-panel-head">
+              <div>
+                <p class="reference-kicker">Account history</p>
+                <h2 id="records-title">Recent records</h2>
+              </div>
+              <span th:text="${#lists.size(transactions) + ' entries'}">0 entries</span>
+            </header>
+            <div class="reference-empty" th:if="${#lists.isEmpty(transactions)}">
+              <strong>No records yet.</strong>
+              <p>Cash-in creates an entry immediately. A transfer appears only after review and confirmation.</p>
+              <a class="reference-empty-action" href="#cash-in">Record cash-in</a>
+            </div>
+            <div class="reference-table" tabindex="0" aria-labelledby="records-title" th:unless="${#lists.isEmpty(transactions)}">
+              <table>
+                <thead>
+                  <tr><th scope="col">Date</th><th scope="col">Record</th><th scope="col">Direction</th><th scope="col">Amount</th></tr>
+                </thead>
+                <tbody>
+                  <tr th:each="transaction : ${transactions}" th:classappend="${transaction.type.name() == 'TRANSFER_RECEIVED' or transaction.type.name() == 'CASH_IN'} ? ' is-incoming' : ' is-outgoing'">
+                    <td><time th:datetime="${transaction.occurredAt}" th:text="${#temporals.format(transaction.occurredAt, 'MMM d, yyyy · h:mm a')}">Today</time></td>
+                    <td><strong th:text="${transaction.details}" th:title="${transaction.details}">Activity</strong></td>
+                    <td><span class="reference-direction" th:text="${transaction.type.name() == 'TRANSFER_RECEIVED' or transaction.type.name() == 'CASH_IN' ? 'IN' : 'OUT'}">IN</span></td>
+                    <td class="reference-amount" th:text="${(transaction.type.name() == 'TRANSFER_RECEIVED' or transaction.type.name() == 'CASH_IN' ? '+ ₱' : '− ₱') + #numbers.formatDecimal(transaction.amount, 1, 2)}">+ ₱0.00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <aside id="actions" class="reference-actions" aria-labelledby="actions-title">
+            <div class="reference-actions-head">
+              <p class="reference-kicker">New counterfoil</p>
+              <h2 id="actions-title">Create a clear record.</h2>
+              <p>Use one focused action at a time.</p>
+            </div>
+            <form id="cash-in" method="post" action="/cash-in" class="reference-form">
+              <h3>Record cash-in</h3>
+              <label for="cash-amount">Amount in PHP</label>
+              <input id="cash-amount" name="amount" type="number" min="0.01" step="0.01" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-describedby="cash-amount-hint" required>
+              <p id="cash-amount-hint" class="reference-input-hint">Use a positive amount with up to two decimal places.</p>
+              <label for="cash-details">Record details</label>
+              <input id="cash-details" name="details" type="text" autocomplete="off" value="Cash-in" required>
+              <button class="reference-primary" type="submit">Record cash-in</button>
+            </form>
+            <form method="post" action="/transfer/review" class="reference-form reference-transfer-form">
+              <h3>Prepare transfer</h3>
+              <label for="recipient">Recipient mobile</label>
+              <input id="recipient" name="recipient" type="tel" inputmode="numeric" autocomplete="tel" pattern="09[0-9]{9}" minlength="11" maxlength="11" placeholder="09XXXXXXXXX" aria-describedby="recipient-hint" required>
+              <p id="recipient-hint" class="reference-input-hint">Use the recipient’s 11-digit mobile number.</p>
+              <label for="transfer-amount">Amount in PHP</label>
+              <input id="transfer-amount" name="amount" type="number" min="0.01" step="0.01" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-describedby="transfer-amount-hint" required>
+              <p id="transfer-amount-hint" class="reference-input-hint">Use a positive amount with up to two decimal places.</p>
+              <button class="reference-secondary" type="submit">Review transfer</button>
+            </form>
+          </aside>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

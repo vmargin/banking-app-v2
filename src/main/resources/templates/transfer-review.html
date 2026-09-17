@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Review a CASH-G transfer before recording it.">
+  <title>Review transfer | CASH-G</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="app-page reference-page reference-review-page">
+  <a class="skip-link" href="#review-record">Skip to transfer review</a>
+  <div class="reference-shell">
+    <aside class="reference-rail" aria-label="Account navigation">
+      <a class="reference-brand" href="/dashboard" aria-label="CASH-G account desk">CASH-G</a>
+      <p class="reference-tagline">Practice today.<br>Build better records tomorrow.</p>
+      <nav class="reference-nav">
+        <a href="/dashboard">Account desk</a>
+        <a href="/dashboard#records">Records</a>
+        <a href="#review-record" aria-current="page">Review transfer</a>
+      </nav>
+      <div class="reference-rail-note"><strong>Local educational simulator</strong><span>PHP account records</span></div>
+    </aside>
+    <div class="reference-workspace">
+      <header class="reference-topbar">
+        <div><p class="reference-kicker">Counterfoil Desk</p><h1>Review before the record is filed.</h1></div>
+        <a class="reference-back" href="/dashboard">← Back to account desk</a>
+      </header>
+      <main id="review-record" class="reference-main reference-review-main">
+        <section class="reference-review" aria-labelledby="review-title">
+          <header>
+            <p class="reference-kicker">Transfer counterfoil</p>
+            <h2 id="review-title">Review the counterfoil.</h2>
+            <p>Check the details once. Confirming uses the existing Java transfer service to record this movement.</p>
+          </header>
+          <dl class="reference-review-details">
+            <div><dt>From</dt><dd th:text="${user.fullName}">Account holder</dd></div>
+            <div><dt>Recipient mobile</dt><dd th:text="${recipient}">09990000000</dd></div>
+            <div><dt>Transfer amount</dt><dd th:text="${'₱' + #numbers.formatDecimal(amount, 1, 2)}">₱0.00</dd></div>
+            <div><dt>Balance after recording</dt><dd th:text="${'₱' + #numbers.formatDecimal(remainingBalance, 1, 2)}">₱0.00</dd></div>
+          </dl>
+          <aside class="reference-review-note"><strong>Local educational transfer</strong><p>Canceling removes this review counterfoil without changing the balance.</p></aside>
+          <div class="reference-review-actions">
+            <form method="post" action="/transfer/confirm"><button class="reference-primary" type="submit">Confirm transfer record <span aria-hidden="true">→</span></button></form>
+            <form method="post" action="/transfer/cancel"><button class="reference-secondary" type="submit">Cancel review</button></form>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
