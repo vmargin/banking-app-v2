@@ -1,49 +1,36 @@
-# CASH-G Counterfoil Desk
+# Clear Ledger
 
 ## Direction
 
-Counterfoil Desk treats every money movement as a working record. The account desk shows what is settled; a transfer becomes a short-lived counterfoil that the user checks before the existing Java service records it. The visual system uses warm paper, carbon ink, one terracotta signal, and exact tabular amounts.
+Clear Ledger is a calm financial workspace for the CASH-G educational banking simulator. It puts the available balance first, keeps transaction history easy to scan, and makes each money action explicit. The design avoids paper, receipt, and counterfoil metaphors. Transfer review remains a functional confirmation step.
 
-## Product mode
+## Visual system
 
-Operate and verify. The user should see the available balance, scan recorded entries, prepare the next action, and understand the difference between a reviewed request and a settled transaction.
+| Token | Value | Purpose |
+| --- | --- | --- |
+| Deep green | `#143B31` | Navigation and primary balance surface |
+| Action green | `#12624D` | Primary actions and current navigation |
+| Canvas | `#F5F7F3` | Workspace background |
+| Ink | `#142922` | Main text and financial amounts |
+| Muted | `#53685F` | Secondary information |
+| Line | `#D0DCD3` | Quiet structure |
+| Positive soft | `#E1F1E9` | Incoming and helpful states |
+| Outgoing | `#9A4936` | Outgoing amount, paired with an `OUT` label |
 
-## Visual tokens
+Use the system sans font already in the application. Set financial amounts in tabular numerals. Keep corners small, borders quiet, and surfaces mostly flat. Do not add a UI framework or motion library for this design.
 
-| Token | Value | Use |
-|---|---|---|
-| Desk paper | `#EEE9DF` | Main workspace |
-| Strong paper | `#F8F4EB` | Forms and review counterfoil |
-| Carbon | `#1B211F` | Primary text and balance |
-| Desk muted | `#6B655C` | Supporting text |
-| Desk line | `#BDB3A5` | Rules and field borders |
-| Signal | `#C9603D` | Primary action, review, outgoing money |
-| Settled | `#506F60` | Incoming money and success state |
+## Screen structure
 
-## Composition
+- Login and registration: a dark green identity rail with a focused form on a white surface.
+- Dashboard: a dark balance anchor, a compact record count, a clear transfer entry point, transaction history, and money action forms.
+- Transfer review: a single details panel, one primary confirmation action, and a distinct cancellation action. The review state is not a receipt or settled transaction.
 
-- Auth screens pair a dark index panel with a light form desk on large screens and use one reading sequence on narrow screens.
-- The dashboard uses a balance strip, a records column, and a new-entry column instead of a generic card grid.
-- The review route gives a transfer its own counterfoil before confirmation; it is not a fake receipt.
-- Incoming and outgoing records use both `IN`/`OUT` text and color so meaning never depends on color alone.
+## Interaction and accessibility
 
-## Interaction and motion
+- Preserve form routes, field names, Thymeleaf bindings, and server-owned banking rules.
+- Use visible text and signs for incoming and outgoing amounts. Color is secondary.
+- Keep controls at least 44 CSS pixels tall, show visible keyboard focus, and keep errors in semantic alert regions.
+- Use short color and press feedback only. Remove nonessential motion for reduced-motion users.
+- Verify 390px mobile and desktop layouts, including the transaction table's horizontal scroll.
 
-- Buttons have a subtle pressed translation and concise color transition.
-- No consequential balance or transfer state depends on animation.
-- A reviewed transfer is stored only as a short-lived session request containing a normalized recipient and amount; it is cleared after confirmation, failure, or cancellation.
-
-## Accessibility and responsive rules
-
-- Every form control has an explicit label and input ID.
-- Errors and success messages use semantic alert/status roles.
-- Keyboard focus remains visible with a high-contrast ring.
-- The layout must remain readable without horizontal overflow at desktop and 390px mobile widths.
-- Text and essential controls must remain readable against all surfaces.
-
-## Content and safety rules
-
-- Use clear, specific banking language: add funds, review transfer, confirm record, available balance, transaction records.
-- Label synthetic data as local educational/demo data.
-- The review screen applies basic server-side checks for a blank recipient, self-transfer, invalid precision, and insufficient available balance. `TransferService` remains the final business-rule authority.
-- Do not imply real payment-provider integration or production banking security. Spring Security/CSRF, hardened credentials, and end-to-end financial safety remain out of scope for this portfolio slice.
+The six-stage audit, design decisions, and verification record live in `context/DESIGN-ENGINEERING.md`.

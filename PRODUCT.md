@@ -28,7 +28,7 @@ The application runs locally for development, testing, and portfolio demonstrati
 - Current banking flows: registration, login, cash-in, transfer, logout, and transaction history on the dashboard.
 - Current data layer: JDBC and PostgreSQL.
 - The current implementation is an educational simulator, not production banking software.
-- The Counterfoil Desk visual direction is the approved redesign direction for the web UI. Transfers use a review counterfoil before confirmation reaches the existing Java service.
+- The web UI uses the Clear Ledger design direction recorded in `DESIGN.md`. Transfers use a review step before confirmation reaches the existing Java service.
 
 ## Brand Commitments
 

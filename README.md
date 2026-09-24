@@ -1,14 +1,14 @@
 # JCash Banking App v2
 
-A portfolio evolution of the JCash banking simulator. Version 2 keeps the Java services, JDBC, PostgreSQL model, and tests while introducing a Counterfoil Desk web interface served by Spring Boot and Thymeleaf.
+A portfolio evolution of the JCash banking simulator. Version 2 keeps the Java services, JDBC, PostgreSQL model, and tests while introducing a Clear Ledger web interface served by Spring Boot and Thymeleaf.
 
 **Live demo:** https://banking-app-v2.onrender.com/login
 
 ## Current direction
 
 The Spring Boot application serves the web UI and connects its forms to the existing
-Java services. The Counterfoil Desk direction uses working paper, dark ink, readable
-records, and a transfer counterfoil review before the existing Java service records a movement. The original Swing screen
+Java services. The Clear Ledger direction uses calm green navigation, a clear balance hierarchy,
+readable records, and transfer review before the existing Java service records a movement. The original Swing screen
 remains available with the --swing argument as a legacy desktop fallback.
 
 ## Run locally
@@ -75,7 +75,7 @@ Render Free may sleep after inactivity, so the first request can take longer.
 
 ```text
 PRODUCT.md          confirmed product context
-DESIGN.md           Counterfoil Desk design direction and tokens
+DESIGN.md           Clear Ledger design direction and tokens
 src/main/java/      Java application, domain, services, repositories, and launchers
 src/main/resources/ PostgreSQL schema and live Thymeleaf UI
 src/test/java/      regression tests
@@ -84,8 +84,8 @@ web/                older standalone visual prototype/reference
 
 ## Verification
 
-The Java verification suite runs 36 tests with 0 failures when the v2 database
-credentials are available, and reports 0 Checkstyle violations. Database-dependent
-tests are skipped when PostgreSQL credentials are unavailable.
+The latest local verification run on 2026-09-24 reported 43 tests, 0 failures,
+6 database tests skipped, and 0 Checkstyle violations. Database-backed behavior
+needs a separate run with v2 PostgreSQL credentials.
 
 This is an educational portfolio project using synthetic data. It is not production banking software.

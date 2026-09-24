@@ -17,8 +17,8 @@
       <small>Local educational banking simulator</small>
     </aside>
     <section class="reference-auth-card" aria-labelledby="register-title">
-      <p class="reference-kicker">Start an account record</p>
-      <h1 id="register-title">Create a local account.</h1>
+      <p class="reference-kicker">Create your account</p>
+      <h1 id="register-title">Start with a local test account.</h1>
       <p>Use test details only. This simulator is not connected to a bank.</p>
       <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
       <form method="post" action="/register" class="reference-auth-form">
@@ -30,7 +30,7 @@
         <label for="pin">Create a four-digit PIN</label>
         <input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="new-password" pattern="[0-9]{4}" minlength="4" maxlength="4" placeholder="••••" aria-describedby="pin-hint" required>
         <p id="pin-hint" class="reference-input-hint">Use four digits for this local test account.</p>
-        <button class="reference-primary" type="submit">Create account record <span aria-hidden="true">→</span></button>
+        <button class="reference-primary" type="submit">Create account <span aria-hidden="true">→</span></button>
       </form>
       <p class="reference-auth-switch">Already registered? <a href="/login">Open your account desk</a></p>
     </section>
