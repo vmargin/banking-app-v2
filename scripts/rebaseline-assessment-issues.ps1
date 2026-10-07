@@ -72,7 +72,7 @@ try {
     foreach ($name in $labelNames) {
         if ($name -in $labels.name) { continue }
         if ($DryRun) { Write-Output "label '$name' would create"; continue }
-        $labels += Invoke-GitHubApi 'POST' "repos/${Repository}/labels" @{ name = $name; color = '336699'; description = 'JCash assessment workflow' }
+        $labels += Invoke-GitHubApi 'POST' "repos/${Repository}/labels" @{ name = $name; color = '336699'; description = 'Cash - G assessment workflow' }
     }
 
     $milestones = @(Invoke-GitHubApi 'GET' "repos/${Repository}/milestones?state=all&per_page=100")

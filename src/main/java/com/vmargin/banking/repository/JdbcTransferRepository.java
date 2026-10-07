@@ -48,7 +48,7 @@ public class JdbcTransferRepository implements TransferRepository {
                                          BigDecimal amount, LocalDateTime occurredAt, String reference)
         throws SQLException {
         if (recipientAccountNumber == null || !recipientAccountNumber.matches("[0-9]{12}")) {
-            throw new InvalidTransferException("Enter a 12-digit Nexa demo account number");
+            throw new InvalidTransferException("Enter a 12-digit Cash - G demo account number");
         }
         long destinationAccountId = accountIdForNumber(connection, recipientAccountNumber);
         if (sourceAccountId == destinationAccountId) {

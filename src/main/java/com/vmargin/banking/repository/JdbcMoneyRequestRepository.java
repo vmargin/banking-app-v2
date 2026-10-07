@@ -78,7 +78,7 @@ public class JdbcMoneyRequestRepository implements MoneyRequestRepository {
                     throw new IllegalArgumentException("Choose an active account on your profile.");
                 }
                 if (requesterAccount.ownerId() == payerAccount.ownerId()) {
-                    throw new IllegalArgumentException("Choose another Nexa customer to request money from.");
+                    throw new IllegalArgumentException("Choose another Cash - G customer to request money from.");
                 }
                 if (!requesterAccount.currencyCode().equals(payerAccount.currencyCode())) {
                     throw new IllegalArgumentException("Requests must use the same currency on both accounts.");

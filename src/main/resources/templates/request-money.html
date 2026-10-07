@@ -4,9 +4,9 @@
   <script src="/js/theme.js"></script>
   <script src="/js/ui.js" defer></script>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#071321"><meta name="description" content="Create and review local Nexa Bank demo money requests.">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Create and review local Cash - G demo money requests.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
-  <title>Request money | Nexa Bank</title>
+  <title>Request money | Cash - G</title>
 </head>
 <body class="app-body">
   <a class="skip-link" href="#main-content">Skip to money requests</a>
@@ -24,7 +24,7 @@
         <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
         <div class="operation-layout request-create-layout">
           <section class="panel operation-form-panel" aria-labelledby="request-title">
-            <p class="eyebrow">ASK ANOTHER NEXA CUSTOMER</p><h2 id="request-title">Create a money request.</h2>
+            <p class="eyebrow">ASK ANOTHER Cash - G CUSTOMER</p><h2 id="request-title">Create a money request.</h2>
             <form method="post" th:action="@{/money-requests}" class="form-stack" th:if="${accountsAvailable and !#lists.isEmpty(eligibleAccounts)}">
               <label for="request-account">Receive into</label>
               <select id="request-account" name="requesterAccountId" required>
@@ -32,7 +32,7 @@
                         th:selected="${account.id == user.bankAccount.id}"
                         th:text="${account.accountName + ' · ' + account.currencyCode + ' ' + #numbers.formatDecimal(account.balance, 1, 'COMMA', 2, 'POINT')}">Everyday · PHP 24,850.00</option>
               </select>
-              <label for="request-payer-account">Recipient's Nexa account number</label>
+              <label for="request-payer-account">Recipient's Cash - G account number</label>
               <input id="request-payer-account" name="payerAccountNumber" type="text" inputmode="numeric" autocomplete="off"
                      pattern="(?:[0-9]{12}|[0-9]{4} [0-9]{4} [0-9]{4})" minlength="12" maxlength="14"
                      placeholder="1234 5678 9012" aria-describedby="request-payer-hint" required>
@@ -48,7 +48,7 @@
           </section>
           <aside class="panel recipient-aside">
             <div class="section-heading"><div><p class="eyebrow">YOUR PEOPLE</p><h2>Saved recipients</h2></div><span class="aside-icon" aria-hidden="true">♧</span></div>
-            <p class="muted">Use a saved Nexa account number when creating a request.</p>
+            <p class="muted">Use a saved Cash - G account number when creating a request.</p>
             <ul class="recipient-list" th:if="${savedRecipientsAvailable and !#lists.isEmpty(savedRecipients)}">
               <li th:each="saved : ${savedRecipients}"><span class="avatar avatar-small" th:text="${#strings.substring(saved.label, 0, 1)}">M</span><span><strong th:text="${saved.label}">Maria Reyes</strong><small th:text="${saved.accountNumber}">100000000001</small></span></li>
             </ul>
@@ -59,7 +59,7 @@
         <div class="request-lists" th:if="${requestsAvailable}">
           <section class="panel request-list-panel" aria-labelledby="incoming-requests-title">
             <div class="section-heading"><div><p class="eyebrow">NEEDS YOUR REVIEW</p><h2 id="incoming-requests-title">Incoming requests</h2></div></div>
-            <div class="empty-state" th:if="${#lists.isEmpty(incomingRequests)}"><strong>You're all caught up.</strong><p>Requests addressed to this Nexa profile will appear here.</p></div>
+            <div class="empty-state" th:if="${#lists.isEmpty(incomingRequests)}"><strong>You're all caught up.</strong><p>Requests addressed to this Cash - G profile will appear here.</p></div>
             <article class="request-row" th:each="request : ${incomingRequests}">
               <div class="request-row-heading"><span class="avatar avatar-small" th:text="${#strings.substring(request.requesterName, 0, 1)}">M</span>
                 <div><strong th:text="${request.requesterName}">Maria Reyes</strong><small th:text="${request.requesterAccountName + ' · account ending ' + request.requesterAccountLastFour}">Everyday · account ending 9012</small></div>
@@ -99,7 +99,7 @@
           </section>
         </div>
         <div class="empty-state panel" role="status" th:unless="${requestsAvailable}"><strong>Money requests are unavailable.</strong><p>Your saved accounts and requests have not changed.</p></div>
-        <div class="demo-disclaimer"><span aria-hidden="true">ⓘ</span> Requests are stored only in the Nexa demo database. Paying one moves local practice funds after a separate review; there are no push alerts or external payments.</div>
+        <div class="demo-disclaimer"><span aria-hidden="true">ⓘ</span> Requests are stored only in the Cash - G demo database. Paying one moves local practice funds after a separate review; there are no push alerts or external payments.</div>
         <footer class="page-footer"><a th:href="@{/dashboard}">← Back to dashboard</a><a th:href="@{/activity}">Review account activity</a></footer>
       </main>
     </div>

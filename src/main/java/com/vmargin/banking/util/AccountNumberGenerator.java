@@ -2,7 +2,7 @@ package com.vmargin.banking.util;
 
 import java.security.SecureRandom;
 
-/** Generates public account numbers for the fictional Nexa demo bank. */
+/** Generates public account numbers for the fictional Cash - G demo bank. */
 public final class AccountNumberGenerator {
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final long FIRST_TWELVE_DIGIT = 100_000_000_000L;

@@ -5,9 +5,9 @@
   <script src="/js/ui.js" defer></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A receipt from your Nexa Bank account activity.">
+  <meta name="description" content="A receipt from your Cash - G account activity.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <title>Activity receipt | Nexa Bank</title>
+  <title>Activity receipt | Cash - G</title>
   <link rel="stylesheet" href="/css/app.css">
 </head>
 <body class="app-body">
@@ -35,7 +35,7 @@
             <div><dt>Reference</dt><dd class="receipt-reference" th:text="${transaction.reference}">Reference</dd></div>
           </dl>
           <p class="receipt-note" th:if="${transaction.type.name() == 'BILL_PAYMENT'}">This is a simulated bill payment record. No biller or payment provider received a payment.</p>
-          <p class="receipt-note" th:unless="${transaction.type.name() == 'BILL_PAYMENT'}">This receipt confirms a ledger record in the Nexa educational simulator.</p>
+          <p class="receipt-note" th:unless="${transaction.type.name() == 'BILL_PAYMENT'}">This receipt confirms a ledger record in the Cash - G educational simulator.</p>
           <a class="button button-secondary receipt-back" href="/activity">Back to account activity</a>
         </section>
       </main>

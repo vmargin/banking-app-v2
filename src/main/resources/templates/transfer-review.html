@@ -4,9 +4,9 @@
   <script src="/js/theme.js"></script>
   <script src="/js/ui.js" defer></script>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#071321"><meta name="description" content="Review a Nexa practice transfer before confirming it.">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Review a Cash - G practice transfer before confirming it.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
-  <title>Review transfer | Nexa Bank</title>
+  <title>Review transfer | Cash - G</title>
 </head>
 <body class="app-body">
   <a class="skip-link" href="#main-content">Skip to transfer review</a>
@@ -19,7 +19,7 @@
         <section class="panel review-panel" aria-labelledby="review-title">
           <div class="review-checkmark" aria-hidden="true">↗</div><p class="eyebrow">TRANSFER REVIEW</p><h2 id="review-title">Ready when you are.</h2>
           <dl class="review-details">
-            <div><dt>From</dt><dd><strong th:text="${sourceAccountName}">Everyday account</strong><small th:text="${user.fullName}">Miguel Santos</small></dd></div>
+        <div><dt>From</dt><dd><strong th:text="${sourceAccountName}">Everyday account</strong><small th:text="${user.displayName}">Miguel Santos</small></dd></div>
             <div><dt>To</dt><dd><strong th:text="${recipientName}">Maria Reyes</strong><small th:text="${recipient}">100000000001</small></dd></div>
             <div><dt>Amount</dt><dd class="review-money" th:text="${(currencyCode == 'PHP' ? '₱' : '$') + #numbers.formatDecimal(amount, 1, 'COMMA', 2, 'POINT')}">₱1,500.00</dd></div>
             <div><dt>Transfer fee</dt><dd th:text="${(currencyCode == 'PHP' ? '₱' : '$') + #numbers.formatDecimal(transferFee, 1, 'COMMA', 2, 'POINT')}">₱0.00</dd></div>

@@ -101,7 +101,7 @@ public class TransactionController {
             String csv = new StatementCsvExporter().export(historyService.getStatement(user, filter));
             return ResponseEntity.ok()
                 .contentType(new MediaType("text", "csv", StandardCharsets.UTF_8))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"nexa-statement.csv\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"cash-g-statement.csv\"")
                 .header(HttpHeaders.CACHE_CONTROL, "no-store")
                 .body(csv);
         } catch (IllegalArgumentException exception) {

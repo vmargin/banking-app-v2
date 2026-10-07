@@ -6,17 +6,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#071321">
-  <meta name="description" content="Create a local Nexa Bank practice account.">
+  <meta name="description" content="Create a local Cash - G practice account.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/css/app.css">
-  <title>Create account | Nexa Bank</title>
+  <title>Create account | Cash - G</title>
 </head>
 <body class="auth-body">
   <a class="skip-link" href="#register-title">Skip to account creation</a>
   <main class="auth-shell auth-register-shell">
     <section class="auth-story">
-      <a class="brand brand-auth" th:href="@{/login}" aria-label="Nexa Bank home">
-        <img src="/favicon.svg" width="38" height="38" alt=""><span>NEXA <small>BANK</small></span>
+      <a class="brand brand-auth" th:href="@{/login}" aria-label="Cash - G home">
+        <img src="/favicon.svg" width="38" height="38" alt=""><span>Cash - G</span>
       </a>
       <div class="auth-story-copy">
         <p class="eyebrow">YOUR NEXT CHAPTER STARTS HERE</p>
@@ -32,7 +32,7 @@
         <div class="auth-preferences"><button th:replace="~{fragments/theme-toggle :: themeToggle}"></button></div>
         <p class="eyebrow">CREATE YOUR PROFILE</p>
         <h2 id="register-title">Start with the basics.</h2>
-        <p class="auth-intro">Use test details only. Nexa is not connected to a real bank.</p>
+        <p class="auth-intro">Use test details only. Cash - G is not connected to a real bank.</p>
         <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
         <form method="post" th:action="@{/register}" class="form-stack">
           <label for="full-name">Full name</label>

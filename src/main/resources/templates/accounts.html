@@ -4,9 +4,9 @@
   <script src="/js/theme.js"></script>
   <script src="/js/ui.js" defer></script>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#071321"><meta name="description" content="Manage your Nexa Bank practice accounts.">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Manage your Cash - G practice accounts.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
-  <title>Accounts | Nexa Bank</title>
+  <title>Accounts | Cash - G</title>
 </head>
 <body class="app-body">
   <a class="skip-link" href="#main-content">Skip to accounts</a>
@@ -16,7 +16,7 @@
       <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
       <main id="main-content" class="page-content">
         <div class="page-heading-row">
-          <div><p class="eyebrow">YOUR NEXA ACCOUNTS</p><h1>Money, with a place for everything.</h1>
+          <div><p class="eyebrow">YOUR Cash - G ACCOUNTS</p><h1>Money, with a place for everything.</h1>
             <p class="muted">Separate balances stay in their own currency. Account numbers belong to this fictional demo.</p></div>
           <a class="button button-primary" href="#open-account"><span aria-hidden="true">＋</span> Open account</a>
         </div>
@@ -62,7 +62,7 @@
             <button class="button button-primary" type="submit">Open account <span aria-hidden="true">→</span></button>
           </form>
         </section>
-        <p class="demo-disclaimer"><span aria-hidden="true">ⓘ</span> Nexa account numbers are fictional 12-digit identifiers for this local app. They cannot receive real transfers.</p>
+        <p class="demo-disclaimer"><span aria-hidden="true">ⓘ</span> Cash - G account numbers are fictional 12-digit identifiers for this local app. They cannot receive real transfers.</p>
         <footer class="page-footer"><span>Balances are practice data only.</span><a th:href="@{/help}">Read the demo guide</a></footer>
       </main>
     </div>

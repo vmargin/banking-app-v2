@@ -6,10 +6,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#071321">
-  <meta name="description" content="View your Nexa Bank demo accounts, recent activity, and monthly insights.">
+  <meta name="description" content="View your Cash - G demo accounts, recent activity, and monthly insights.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/css/app.css">
-  <title>Dashboard | Nexa Bank</title>
+  <title>Dashboard | Cash - G</title>
 </head>
 <body class="app-body">
   <a class="skip-link" href="#main-content">Skip to dashboard</a>
@@ -23,7 +23,7 @@
 
         <section class="dashboard-heading">
           <div>
-            <p class="muted">Good to see you, <strong th:text="${user.fullName}">Miguel Santos</strong>.</p>
+<p class="muted">Good to see you, <strong th:text="${user.displayName}">Miguel Santos</strong>.</p>
             <h1>Your money, your next move.</h1>
           </div>
           <a class="text-link" th:href="@{/activity}">View all activity <span aria-hidden="true">↗</span></a>
@@ -184,7 +184,7 @@
               <a class="icon-link" th:href="@{/cards}" aria-label="Manage your cards">↗</a>
             </div>
             <article class="mini-card-visual" th:each="card, cardStat : ${cards}" th:if="${cardStat.index == 0}">
-              <div class="mini-card-top"><span>NEXA BANK</span><span th:text="${card.brand}">VISA</span></div>
+              <div class="mini-card-top"><span>Cash - G</span></div>
               <div class="mini-card-chip" aria-hidden="true"><span></span></div>
               <div class="mini-card-number" th:text="${'••••  ••••  ••••  ' + card.lastFour}">••••  ••••  ••••  4217</div>
               <div class="mini-card-bottom"><span th:text="${card.accountName}">Everyday account</span><span th:text="${card.isFrozen() ? 'FROZEN' : 'ACTIVE'}">ACTIVE</span></div>
@@ -195,7 +195,7 @@
           </section>
         </section>
 
-        <footer class="page-footer"><span>Nexa Bank is a fictional banking simulator.</span><a th:href="@{/help}">How demo data works</a></footer>
+        <footer class="page-footer"><span>Cash - G is a fictional banking simulator.</span><a th:href="@{/help}">How demo data works</a></footer>
       </main>
     </div>
   </div>

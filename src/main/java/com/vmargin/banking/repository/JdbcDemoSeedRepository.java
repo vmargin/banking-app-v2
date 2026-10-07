@@ -38,16 +38,16 @@ public final class JdbcDemoSeedRepository {
     private static final String REF_LAPTOP_GOAL = "00000000-0000-4000-8000-000000000012";
     private static final String REF_PERSONAL_CARE = "00000000-0000-4000-8000-000000000013";
 
-    /** Seeds an idempotent, local-only Nexa practice ledger after the explicit demo migration. */
-    public void seedNexaDemo() throws SQLException {
+    /** Seeds an idempotent, local-only Cash - G practice ledger after the explicit demo migration. */
+    public void seedCashGDemo() throws SQLException {
         seedIfMissing(MIGUEL_MOBILE, "Miguel Santos", "1234", new BigDecimal("271761.00"));
         seedIfMissing(MARIA_MOBILE, "Maria Reyes", "1234", new BigDecimal("35000.00"));
 
         JdbcUserRepository users = new JdbcUserRepository();
         User miguel = users.findByMobileNumber(MIGUEL_MOBILE)
-            .orElseThrow(() -> new SQLException("Nexa demo profile was not created"));
+            .orElseThrow(() -> new SQLException("Cash - G demo profile was not created"));
         User maria = users.findByMobileNumber(MARIA_MOBILE)
-            .orElseThrow(() -> new SQLException("Nexa demo contact was not created"));
+            .orElseThrow(() -> new SQLException("Cash - G demo contact was not created"));
         BankAccount checking = miguel.getBankAccount();
         JdbcAccountRepository accounts = new JdbcAccountRepository();
         BankAccount savings = accounts.openDemoAccountIfMissing(miguel.getId(), miguel.getFullName(),
@@ -215,7 +215,7 @@ public final class JdbcDemoSeedRepository {
     }
 
     public boolean seedAdministratorIfMissing(Connection connection) throws SQLException {
-        return seedIfMissing(connection, "09990000000", "JCash Administrator", "1234",
+        return seedIfMissing(connection, "09990000000", "Cash - G Administrator", "1234",
             BigDecimal.ZERO, UserRole.ADMIN);
     }
 

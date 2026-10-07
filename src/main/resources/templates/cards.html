@@ -4,9 +4,9 @@
   <script src="/js/theme.js"></script>
   <script src="/js/ui.js" defer></script>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#071321"><meta name="description" content="Manage fictional Nexa Bank practice cards.">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Manage fictional Cash - G practice cards.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
-  <title>Cards | Nexa Bank</title>
+  <title>Cards | Cash - G</title>
 </head>
 <body class="app-body">
   <a class="skip-link" href="#main-content">Skip to cards</a>
@@ -32,14 +32,14 @@
         <section class="cards-grid" aria-label="Your practice cards" th:if="${cardsAvailable and !#lists.isEmpty(cards)}">
           <article class="panel card-management" th:each="card : ${cards}">
             <div class="practice-card-face" th:classappend="${card.isFrozen()} ? ' card-face-frozen' : ''">
-              <div class="practice-card-top"><span class="card-brand-lockup"><img src="/favicon.svg" alt="" width="22" height="22"> NEXA BANK</span><span class="card-network" th:text="${card.brand}">VISA</span></div>
+              <div class="practice-card-top"><span class="card-brand-lockup"><img src="/favicon.svg" alt="" width="22" height="22"> Cash - G</span></div>
               <div class="card-chip" aria-label="Decorative card chip"><span></span><i></i></div>
               <p class="card-number-display" th:text="${'••••  ••••  ••••  ' + card.lastFour}">••••  ••••  ••••  4217</p>
               <div class="practice-card-bottom"><span><small>ACCOUNT</small><strong th:text="${card.accountName}">Everyday account</strong></span><span><small>TYPE</small><strong th:text="${card.cardType}">DEBIT</strong></span></div>
-              <span class="card-watermark" aria-hidden="true">N</span>
+              <span class="card-watermark" aria-hidden="true">CG</span>
             </div>
             <div class="card-management-body">
-              <div class="card-management-title"><div><p class="eyebrow" th:text="${card.brand + ' · ' + card.cardType}">VISA · DEBIT</p><h2 th:text="${card.cardName}">Everyday debit</h2></div>
+              <div class="card-management-title"><div><p class="eyebrow" th:text="${'Practice card · ' + card.cardType}">Practice card · DEBIT</p><h2 th:text="${card.cardName}">Everyday debit</h2></div>
                 <span class="status-pill" th:classappend="${card.isFrozen()} ? ' status-muted' : ' status-active'" th:text="${card.isFrozen() ? 'FROZEN' : 'ACTIVE'}">ACTIVE</span></div>
               <dl class="card-meta"><div><dt>Linked account</dt><dd th:text="${card.accountName}">Everyday account</dd></div><div><dt>Last four</dt><dd th:text="${'•••• ' + card.lastFour}">•••• 4217</dd></div></dl>
               <form method="post" th:action="@{/cards/{id}/limit(id=${card.id})}" class="limit-form">

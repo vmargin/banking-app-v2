@@ -5,9 +5,9 @@
   <script src="/js/ui.js" defer></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Review your Nexa Bank account details and PIN settings.">
+  <meta name="description" content="Review your Cash - G account details and PIN settings.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <title>Account settings | Nexa Bank</title>
+  <title>Account settings | Cash - G</title>
   <link rel="stylesheet" href="/css/app.css">
 </head>
 <body class="app-body">
@@ -28,7 +28,7 @@
               </div>
             </header>
             <dl class="settings-details">
-              <div><dt>Account holder</dt><dd th:text="${user.fullName}">Account holder</dd></div>
+              <div><dt>Account holder</dt><dd th:text="${user.displayName}">Account holder</dd></div>
               <div><dt>Mobile number</dt><dd th:text="${user.mobileNumber}">09XXXXXXXXX</dd></div>
               <div><dt>Account number</dt><dd th:text="${user.bankAccount.accountId}">ACC-000</dd></div>
               <div><dt>Currency</dt><dd>Philippine peso (PHP)</dd></div>
@@ -73,7 +73,7 @@
               </div>
               <span class="verification-status" role="status">Not connected</span>
             </header>
-            <p>Nexa cannot confirm your identity or send a one-time code. This local simulator has no SMS, identity-check, or recovery provider.</p>
+            <p>Cash - G cannot confirm your identity or send a one-time code. This local simulator has no SMS, identity-check, or recovery provider.</p>
             <p class="settings-security-note">Use synthetic details only. Your four-digit practice PIN protects this local demo account; it does not verify your identity.</p>
             <a class="verification-help-link" th:href="@{/help#security}">Review security and recovery limits</a>
           </section>

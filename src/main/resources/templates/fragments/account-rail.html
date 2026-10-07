@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-  <aside th:fragment="accountRail(activePage)" class="sidebar" aria-label="Nexa Bank navigation">
-    <a class="brand" th:href="@{/dashboard}" aria-label="Nexa Bank home">
+  <aside th:fragment="accountRail(activePage)" class="sidebar" aria-label="Cash - G navigation">
+    <a class="brand" th:href="@{/dashboard}" aria-label="Cash - G home">
       <img src="/favicon.svg" width="34" height="34" alt="">
-      <span>NEXA <small>BANK</small></span>
+      <span>Cash - G</span>
     </a>
     <p class="sidebar-caption">PERSONAL BANKING</p>
     <nav th:fragment="mainLinks(activePage)" class="sidebar-nav" aria-label="Main navigation">
@@ -65,7 +65,7 @@
   </aside>
 
   <header th:fragment="topbar(user)" class="topbar">
-    <div class="topbar-breadcrumb"><span>Nexa Bank</span><span aria-hidden="true">/</span><span>Personal</span></div>
+    <div class="topbar-breadcrumb"><span>Cash - G</span><span aria-hidden="true">/</span><span>Personal</span></div>
     <div class="topbar-actions">
       <form class="global-search" method="get" th:action="@{/activity}" role="search">
         <label class="sr-only" for="global-search">Search account activity</label>
@@ -78,8 +78,8 @@
       </a>
       <button th:replace="~{fragments/theme-toggle :: themeToggle}"></button>
       <a class="profile-chip" th:href="@{/settings}" aria-label="Open account settings">
-        <span class="avatar" th:text="${#strings.substring(user.fullName, 0, 1)}">M</span>
-        <span class="profile-copy"><strong th:text="${user.fullName}">Miguel Santos</strong><small>Personal account</small></span>
+        <span class="avatar" th:text="${#strings.substring(user.displayName, 0, 1)}">M</span>
+        <span class="profile-copy"><strong th:text="${user.displayName}">Miguel Santos</strong><small>Personal account</small></span>
         <span class="profile-chevron" aria-hidden="true">⌄</span>
       </a>
     </div>

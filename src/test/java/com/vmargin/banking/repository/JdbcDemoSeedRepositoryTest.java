@@ -47,8 +47,8 @@ class JdbcDemoSeedRepositoryTest {
     }
 
     @Test
-    void nexaDemoSeedBalancesAccountsGoalsAndRemainsIdempotent() throws Exception {
-        seeds.seedNexaDemo();
+    void cashGDemoSeedBalancesAccountsGoalsAndRemainsIdempotent() throws Exception {
+        seeds.seedCashGDemo();
 
         var miguel = new JdbcUserRepository().findByMobileNumber("09990000001").orElseThrow();
         var accounts = new JdbcAccountRepository().findByOwner(miguel.getId());
@@ -77,7 +77,7 @@ class JdbcDemoSeedRepositoryTest {
             .map(transaction -> transaction.getAmount()).reduce(BigDecimal.ZERO.setScale(2), BigDecimal::add));
 
         long transactionsBeforeRetry = count("transactions");
-        seeds.seedNexaDemo();
+        seeds.seedCashGDemo();
         assertEquals(transactionsBeforeRetry, count("transactions"));
         assertEquals(3, new JdbcSavingsGoalRepository().findByOwner(miguel.getId()).size());
         assertEquals(new BigDecimal("24850.00"), new JdbcUserRepository()

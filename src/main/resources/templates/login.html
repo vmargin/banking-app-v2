@@ -6,17 +6,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#071321">
-  <meta name="description" content="Sign in to the fictional Nexa Bank practice app.">
+  <meta name="description" content="Sign in to the fictional Cash - G practice app.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/css/app.css">
-  <title>Sign in | Nexa Bank</title>
+  <title>Sign in | Cash - G</title>
 </head>
 <body class="auth-body">
   <a class="skip-link" href="#signin-title">Skip to sign in</a>
   <main class="auth-shell">
     <section class="auth-story">
-      <a class="brand brand-auth" th:href="@{/login}" aria-label="Nexa Bank home">
-        <img src="/favicon.svg" width="38" height="38" alt=""><span>NEXA <small>BANK</small></span>
+      <a class="brand brand-auth" th:href="@{/login}" aria-label="Cash - G home">
+        <img src="/favicon.svg" width="38" height="38" alt=""><span>Cash - G</span>
       </a>
       <div class="auth-story-copy">
         <p class="eyebrow">A SMARTER WAY TO BANK</p>
@@ -37,7 +37,7 @@
       <div class="auth-card">
         <div class="auth-preferences"><button th:replace="~{fragments/theme-toggle :: themeToggle}"></button></div>
         <p class="eyebrow">WELCOME BACK</p>
-        <h2 id="signin-title">Sign in to Nexa.</h2>
+        <h2 id="signin-title">Sign in to Cash - G.</h2>
         <p class="auth-intro">Use your local practice account to pick up where you left off.</p>
         <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
         <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
@@ -59,7 +59,7 @@
           <span class="demo-box-icon" aria-hidden="true">✦</span>
           <div><strong>Try the demo</strong><p>Miguel Santos · 09990000001 · PIN 1234</p></div>
         </div>
-        <p class="auth-switch">New to Nexa? <a th:href="@{/register}">Create a practice account</a></p>
+        <p class="auth-switch">New to Cash - G? <a th:href="@{/register}">Create a practice account</a></p>
       </div>
       <p class="auth-legal">Never use a real banking PIN or real financial information here.</p>
     </section>

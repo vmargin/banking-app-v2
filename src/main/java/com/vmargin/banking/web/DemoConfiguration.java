@@ -20,7 +20,7 @@ public class DemoConfiguration {
             try (Connection connection = DatabaseConnection.open()) {
                 new JdbcSchemaMigrator().migrate(connection);
             }
-            new JdbcDemoSeedRepository().seedNexaDemo();
+            new JdbcDemoSeedRepository().seedCashGDemo();
         };
     }
 }

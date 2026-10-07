@@ -1,12 +1,12 @@
-# NEXA Bank Visual System
+# Cash - G Visual System
 
 ## Direction
 
-The user-provided NEXA board is the visual authority for the product. Carry its near-black navy canvas, layered blue account panels, fine illuminated borders, direct sans-serif type, large balance hierarchy, compact labels, and clearly grouped banking tasks into the real Spring/Thymeleaf interface.
+Keep the existing Cash - G visual direction: near-black navy canvases, layered blue account panels, fine illuminated borders, direct sans-serif type, clear balance hierarchy, and grouped banking tasks in the Spring/Thymeleaf interface. Use Cash - G as the product name across every user-facing screen and artifact.
 
 The dashboard puts the PHP account total and next actions first, then accounts, recent activity, category spending, savings goals, and the local practice card. Dedicated pages cover accounts, transfers, bills, cards, savings, insights, activity, notifications, settings, verification availability, and help. The collage guides information hierarchy and visual treatment; each displayed banking action must still match the simulator's real behavior in `PRODUCT.md`.
 
-Dark mode is the default because it is central to the supplied board. The persisted light theme remains a complete alternate palette for users who choose it. No CSS framework or third-party design-system dependency is needed for this server-rendered application.
+Dark mode is the default and the persisted light theme remains a complete alternate palette. Both themes use the same component hierarchy, spacing, and control shapes. No CSS framework or third-party design-system dependency is needed for this server-rendered application.
 
 ## Tokens
 
@@ -32,12 +32,16 @@ Dark mode is the default because it is central to the supplied board. The persis
 
 Use semantic CSS custom properties for every shared surface, action, status, border, and focus state. Typography uses the existing system sans stack: 16px body and input text, 14px form labels and guidance, and a 12px minimum for compact metadata. Money uses tabular numerals. Keep section labels concise, headings distinct, and balance values easy to scan. Use blue edges and soft offset shadows to define depth without obscuring content. The stronger input-boundary token identifies editable controls; the quieter border token separates panels.
 
+Use a shared spacing scale of 4, 8, 12, 16, 24, 32, and 40px. Leave about 24px between page sections, 16px between related content groups, and at least 8px between adjacent controls. Keep profile labels and values in a two-column definition list; keep phone and account numbers together with tabular numerals and allow them to fit narrow screens without breaking a digit sequence.
+
+Use one control system in both themes: 44px minimum field height, 9px radius, consistent padding, semantic field surface and boundary, and a visible focus ring. Keep native `<select>` controls and their keyboard behavior, and style their closed field and option colors from the active theme where the browser supports it.
+
 ## Layout and content
 
 - Keep the compact navigation rail and top utility row on wide screens. On narrow screens, use Home, Accounts, Transfer, Activity, and More. The native More disclosure reuses the rail links and provides cash-in, requests, settings, help, and logout.
 - On the dashboard, pair the balance panel with quick actions, show all account cards in one grouped section, then place recent activity beside data-backed monthly spending.
 - Show the most-progressed savings goal as the featured image panel and up to two additional goals as compact progress rows. The full goal list remains on the savings page.
-- Keep the display-only card preview visually distinct from issued-card controls. Use PHP and USD separately, and derive all totals from the ledger-backed account data.
+- Keep the display-only card preview visually distinct from issued-card controls. Use the standard ID-1 card aspect ratio (85.60 × 53.98 mm, about 1.586:1), with a 340px maximum width for full card views and a smaller preview on the dashboard. Label it as a Cash - G practice card; do not show a real card network mark. Use PHP and USD separately, and derive all totals from the ledger-backed account data.
 - Keep transfer, bill, request, and savings review pages explicit about the local operation, amount, recipient/account, and cancel path before any write.
 - At narrow widths, stack dashboard panels and keep all primary routes reachable. Tables scroll within their own containers, never across the page.
 
@@ -54,11 +58,10 @@ Use semantic CSS custom properties for every shared surface, action, status, bor
 
 ## Audit evidence
 
-See [UI UX Pro Max audit and implementation](context/UIUX-PRO-MAX-AUDIT.md) for the October 7, 2026 findings, measured contrast, browser checks, and implementation scope.
 
 ## Product truth
 
-NEXA is a synthetic local banking simulator. Refer to `PRODUCT.md` for exact account, ledger, provider, card, security, and identity-verification boundaries. The sample board does not override database-derived balances or justify claims of external settlement, card issuance, payment rails, SMS/OTP, KYC, or a security certification.
+Cash - G is a synthetic local banking simulator. Refer to `PRODUCT.md` for exact account, ledger, provider, card, security, and identity-verification boundaries. The visual direction does not override database-derived balances or justify claims of external settlement, card issuance, payment rails, SMS/OTP, KYC, or a security certification.
 
 ## Implementation boundary
 

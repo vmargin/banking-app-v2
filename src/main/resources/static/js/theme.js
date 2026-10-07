@@ -1,6 +1,6 @@
 (() => {
-    const preferenceKey = "nexa-bank-theme";
-    const legacyPreferenceKey = "cash-g-theme";
+    const preferenceKey = "cash-g-theme";
+    const legacyPreferenceKey = "nexa-bank-theme";
     const root = document.documentElement;
 
     function readSavedTheme() {

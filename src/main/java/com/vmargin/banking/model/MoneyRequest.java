@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/** A local request between two Nexa demo customers. It is not a payment instruction. */
+/** A local request between two Cash - G demo customers. It is not a payment instruction. */
 public record MoneyRequest(long id, String reference, long requesterId, String requesterName,
                            long requesterAccountId, String requesterAccountName, String requesterAccountLastFour,
                            long payerId, String payerName, BigDecimal amount, String currencyCode,

@@ -55,11 +55,11 @@ public class AccountService {
 
     public static String normalizeAccountNumber(String suppliedAccountNumber) {
         if (suppliedAccountNumber == null) {
-            throw new IllegalArgumentException("Enter a 12-digit Nexa demo account number.");
+            throw new IllegalArgumentException("Enter a 12-digit Cash - G demo account number.");
         }
         String normalized = suppliedAccountNumber.trim().replaceAll("\\s", "");
         if (!normalized.matches("[0-9]{12}")) {
-            throw new IllegalArgumentException("Enter a 12-digit Nexa demo account number.");
+            throw new IllegalArgumentException("Enter a 12-digit Cash - G demo account number.");
         }
         return normalized;
     }

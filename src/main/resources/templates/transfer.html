@@ -4,9 +4,9 @@
   <script src="/js/theme.js"></script>
   <script src="/js/ui.js" defer></script>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#071321"><meta name="description" content="Review a simulated Nexa account transfer before recording it.">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Review a simulated Cash - G account transfer before recording it.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
-  <title>Transfer | Nexa Bank</title>
+  <title>Transfer | Cash - G</title>
 </head>
 <body class="app-body">
   <a class="skip-link" href="#main-content">Skip to transfer</a>
@@ -25,7 +25,7 @@
         <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
         <div class="operation-layout">
           <section class="panel operation-form-panel" aria-labelledby="transfer-title">
-            <p class="eyebrow">NEXA TO NEXA</p><h2 id="transfer-title">Prepare a transfer.</h2>
+            <p class="eyebrow">CASH - G CUSTOMER TO CUSTOMER</p><h2 id="transfer-title">Prepare a transfer.</h2>
             <form method="post" th:action="@{/transfer/review}" class="form-stack" th:if="${accountsAvailable and !#lists.isEmpty(eligibleAccounts)}">
               <label for="source-account">From account</label>
               <select id="source-account" name="sourceAccountId" data-currency-select required>
@@ -42,11 +42,11 @@
                           th:text="${saved.label + ' · ' + saved.accountNumber}">Maria Reyes · 100000000001</option>
                 </select>
               </div>
-              <label for="recipient">Recipient Nexa account number</label>
+              <label for="recipient">Recipient Cash - G account number</label>
               <input id="recipient" name="recipient" type="text" inputmode="numeric" autocomplete="off"
                      pattern="(?:[0-9]{12}|[0-9]{4} [0-9]{4} [0-9]{4})" minlength="12" maxlength="14" placeholder="1234 5678 9012"
                      th:value="${transferRecipient}" aria-describedby="recipient-hint" required>
-              <p class="field-hint" id="recipient-hint">Use the 12-digit number from a Nexa demo account.</p>
+              <p class="field-hint" id="recipient-hint">Use the 12-digit number from a Cash - G demo account.</p>
               <label for="transfer-amount">Amount <span class="muted" data-currency-label>(PHP)</span></label>
               <div class="money-input"><span aria-hidden="true" data-currency-symbol>₱</span><input id="transfer-amount" name="amount" type="number" min="0.01" max="9999999999999.99" step="0.01" inputmode="decimal" placeholder="0.00" th:value="${transferAmount}" required></div>
               <p class="field-hint">Transfers must use the same currency at both ends. No conversion or external transfer is available.</p>
@@ -57,7 +57,7 @@
           </section>
           <aside class="panel recipient-aside">
             <div class="section-heading"><div><p class="eyebrow">YOUR PEOPLE</p><h2>Saved recipients</h2></div><span class="aside-icon" aria-hidden="true">♧</span></div>
-            <p class="muted">Save fictional Nexa account numbers to make your next practice transfer quicker.</p>
+            <p class="muted">Save fictional Cash - G account numbers to make your next practice transfer quicker.</p>
             <form method="post" th:action="@{/recipients}" class="form-stack compact-form" id="save-recipient-form">
               <label for="new-recipient-number">Account number</label>
               <input id="new-recipient-number" name="recipientAccountNumber" type="text" inputmode="numeric" pattern="(?:[0-9]{12}|[0-9]{4} [0-9]{4} [0-9]{4})" minlength="12" maxlength="14" placeholder="1234 5678 9012" required>

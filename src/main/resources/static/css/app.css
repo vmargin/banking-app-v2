@@ -1420,7 +1420,7 @@ button { cursor: pointer; }
     .savings-move-forms form > div { flex-wrap: wrap; }
 }
 
-/* Nexa application surfaces */
+/* Cash - G application surfaces */
 .sr-only {
     position: absolute;
     width: 1px;
@@ -1471,7 +1471,7 @@ button { cursor: pointer; }
     color: var(--reference-ink);
     font-size: var(--type-small);
     font-weight: 800;
-    letter-spacing: .18em;
+    letter-spacing: .05em;
     line-height: 1;
     text-decoration: none;
 }
@@ -1748,7 +1748,7 @@ button { cursor: pointer; }
 .activity-filters input,
 .activity-filters select,
 .month-picker input,
-.month-picker select { width: 100%; min-width: 0; min-height: 44px; border: 1px solid var(--reference-line); border-radius: 8px; padding: 9px 11px; color: var(--reference-ink); background: var(--reference-soft-surface); font: inherit; font-size: var(--type-body); }
+.month-picker select { width: 100%; min-width: 0; min-height: 44px; border: 1px solid var(--reference-line); border-radius: 9px; padding: 9px 11px; color: var(--reference-ink); background: var(--reference-soft-surface); font: inherit; font-size: var(--type-body); }
 .form-stack textarea { min-height: 84px; resize: vertical; }
 .form-stack input::placeholder,
 .form-stack textarea::placeholder,
@@ -2165,6 +2165,7 @@ button:disabled { cursor: wait; opacity: .7; }
 .settings-details dt { font-size: var(--type-small); }
 .review-details dd small { display: block; margin-top: 3px; color: var(--reference-muted); font-size: var(--type-caption); }
 .receipt-back { width: 100%; margin-top: 20px; }
+
 .review-cancel-form { margin-top: 10px; }
 .goal-card-heading > div,
 .goal-card-body { min-width: 0; }
@@ -2198,4 +2199,78 @@ button:disabled { cursor: wait; opacity: .7; }
     .goal-amount-row { gap: 4px; }
     .receipt-amount { overflow-wrap: anywhere; font-size: clamp(1.5rem, 7vw, 2rem); }
     .review-details div { flex-wrap: wrap; }
+}
+
+/* Cash - G visual consistency */
+select {
+    appearance: none;
+    color-scheme: inherit;
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--reference-muted) 50%),
+        linear-gradient(135deg, var(--reference-muted) 50%, transparent 50%);
+    background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
+    background-repeat: no-repeat;
+    background-size: 5px 5px;
+    padding-right: 34px !important;
+}
+
+select option,
+select optgroup {
+    color: var(--reference-ink);
+    background-color: var(--reference-surface);
+}
+
+select option:checked {
+    color: var(--reference-action-ink);
+    background-color: var(--reference-action);
+}
+
+.page-content > * + * { margin-top: 24px; }
+.page-content > .page-heading-row,
+.page-content > .dashboard-heading { margin-bottom: 0; }
+.page-content > .demo-disclaimer,
+.page-content > .page-footer { margin-top: 0; }
+
+.settings-layout { gap: 16px; }
+.settings-details { gap: 12px; }
+.settings-details > div {
+    grid-template-columns: minmax(96px, .85fr) minmax(0, 1.15fr);
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 12px;
+}
+.settings-details dd {
+    max-width: none;
+    overflow-wrap: normal;
+    font-size: var(--type-small);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.cards-grid { gap: 16px; }
+.card-management { gap: 16px; }
+.card-management-body { gap: 12px; }
+.mini-card-visual {
+    display: flex;
+    width: 100%;
+    max-width: 300px;
+    min-height: 0;
+    aspect-ratio: 85.6 / 53.98;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.practice-card-face {
+    display: flex;
+    width: min(100%, 340px);
+    min-height: 0;
+    aspect-ratio: 85.6 / 53.98;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.mini-card-chip { margin: 12px 0 8px; }
+.card-number-display { margin: 8px 0; white-space: nowrap; }
+.notifications-panel { padding: 20px; }
+
+@media (max-width: 380px) {
+    .settings-details > div { grid-template-columns: minmax(88px, .8fr) minmax(0, 1.2fr); gap: 8px; }
 }

@@ -380,7 +380,7 @@ class BankingWebControllerTest {
             .param("toDate", "2026-09-02").param("search", "rent"))
             .andExpect(status().isOk())
             .andExpect(header().string("Content-Type", "text/csv;charset=UTF-8"))
-            .andExpect(header().string("Content-Disposition", "attachment; filename=\"nexa-statement.csv\""))
+            .andExpect(header().string("Content-Disposition", "attachment; filename=\"cash-g-statement.csv\""))
             .andExpect(content().string(org.hamcrest.Matchers.containsString("\"'=HYPERLINK(")));
 
         verify(historyService).getStatement(current, filter);

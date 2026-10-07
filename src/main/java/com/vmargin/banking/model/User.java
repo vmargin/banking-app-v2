@@ -77,6 +77,10 @@ public class User {
         return fullName;
     }
 
+    public String getDisplayName() {
+        return "JCash Administrator".equals(fullName) ? "Cash - G Administrator" : fullName;
+    }
+
     public BigDecimal getBalance() {
         return bankAccount.getBalance();
     }

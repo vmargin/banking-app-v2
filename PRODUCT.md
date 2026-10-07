@@ -1,4 +1,4 @@
-# NEXA Bank Product Definition
+# Cash - G Product Definition
 
 <!-- impeccable:product-schema 1 -->
 
@@ -12,12 +12,12 @@ Portfolio reviewers evaluating Java, Spring Boot, JDBC, relational data, and cle
 
 ## Purpose
 
-NEXA Bank demonstrates common retail-banking screens and safe local ledger workflows in an explainable Java application. Its visual direction comes from the user-provided NEXA board. Sample names, balances, brands, and provider claims in that board are not evidence of real integrations.
+Cash - G demonstrates common retail-banking screens and safe local ledger workflows in an explainable Java application. Its visual direction comes from the user-provided Cash - G board. Sample names, balances, brands, and provider claims in that board are not evidence of real integrations.
 
 ## Product scope
 
 - Dashboard with PHP account totals, a separately displayed USD practice account, recent activity, quick actions, a spending summary, goals, and display-only card information.
-- Owner-scoped account details and unique 12-digit Nexa simulator account numbers.
+- Owner-scoped account details and unique 12-digit Cash - G simulator account numbers.
 - Same-currency internal transfers with recipient ownership checks, a review step, one-use confirmation, paired ledger entries, and a receipt.
 - Local money requests. Creating a request does not debit the payer; payment requires the payer to review and confirm it.
 - Fictional-biller payments with review, masked reference data, one local debit, and a receipt.
@@ -30,8 +30,8 @@ NEXA Bank demonstrates common retail-banking screens and safe local ledger workf
 
 - Monetary input is positive, limited to two decimal places, and bounded before persistence.
 - PHP and USD balances remain separate. The dashboard total labeled “Total across PHP accounts” sums PHP bank accounts only. Savings-goal reserves appear in the goals area; they are not bank accounts.
-- The board's displayed PHP accounts are PHP 24,850 and PHP 80,000, totaling PHP 104,850. Its PHP 124,850 headline is PHP 20,000 higher. NEXA calculates the displayed account total from stored balances rather than copying that mismatch.
-- Each Nexa account number is a randomly generated, unique 12-digit numeric simulator identifier. Twelve digits is not a Philippine banking standard, IBAN, or routing number.
+- The board's displayed PHP accounts are PHP 24,850 and PHP 80,000, totaling PHP 104,850. Its PHP 124,850 headline is PHP 20,000 higher. Cash - G calculates the displayed account total from stored balances rather than copying that mismatch.
+- Each Cash - G account number is a randomly generated, unique 12-digit numeric simulator identifier. Twelve digits is not a Philippine banking standard, IBAN, or routing number.
 - Database primary keys are internal. A money-operation reference is a UUID string shared by both sides of an internal transfer and protected against reuse.
 - Spending categories are persisted with ledger rows. Existing transactions receive a safe category during schema migration; older card purchases default to `OTHER` when their merchant category cannot be inferred.
 - Internal transfers and savings-goal movements are not counted as purchases or bill spending. USD is excluded from PHP insights.
@@ -56,7 +56,7 @@ NEXA Bank demonstrates common retail-banking screens and safe local ledger workf
 1. Money totals and ledger records must agree.
 2. Review makes the exact recipient, account, amount, currency, and local-only nature clear before confirmation.
 3. Navigation keeps accounts, transfer, bills, cards, savings, insights, activity, notifications, settings, and help easy to reach.
-4. The interface follows the supplied dark NEXA board while keeping controls, status, focus, and data readable across screen sizes.
+4. The interface follows the supplied dark Cash - G board while keeping controls, status, focus, and data readable across screen sizes.
 5. A simulated provider action is labeled as local or unavailable rather than represented as completed external banking.
 
 ## Accessibility target
@@ -65,7 +65,6 @@ Use semantic headings, labels, tables, keyboard-visible focus, status and error 
 
 ## Evidence
 
-- [NEXA product and banking-pattern audit](context/NEXA-PRODUCT-AUDIT.md)
 - Spring and JDBC implementation in `src/main/java`
 - Thymeleaf screens and shared CSS in `src/main/resources`
 - H2 migration, repository, service, and web tests in `src/test/java`
