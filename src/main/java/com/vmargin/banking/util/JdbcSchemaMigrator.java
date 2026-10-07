@@ -793,12 +793,22 @@ public final class JdbcSchemaMigrator {
                               boolean nullable) throws SQLException {
         try (ResultSet result = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(),
             actualTable(connection, table), column)) {
-            if (!result.next() || result.getInt("DATA_TYPE") != expectedType
+            if (!result.next() || !matchesJdbcType(result, expectedType)
                 || result.getInt("NULLABLE") != (nullable
                     ? DatabaseMetaData.columnNullable : DatabaseMetaData.columnNoNulls)) {
                 throw new SQLException("Migration column definition did not pass: " + table + "." + column);
             }
         }
+    }
+
+    private boolean matchesJdbcType(ResultSet column, int expectedType) throws SQLException {
+        int actualType = column.getInt("DATA_TYPE");
+        if (actualType == expectedType) {
+            return true;
+        }
+        // PostgreSQL JDBC reports its BOOLEAN type as BIT with the native name "bool".
+        return expectedType == java.sql.Types.BOOLEAN && actualType == java.sql.Types.BIT
+            && "bool".equalsIgnoreCase(column.getString("TYPE_NAME"));
     }
 
     private void verifyForeignKey(Connection connection, String table, String column,
