@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Understand Nexa Bank's simulator limits, transaction records, and account settings.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>Help | Nexa Bank</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#help-main">Skip to main content</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('help')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="help-main" class="page-content help-content">
+        <div class="page-heading-row"><div><p class="eyebrow">NEXA BANK GUIDE</p><h1>Help and simulator limits</h1><p class="muted">Understand your practice account and find your next step.</p></div></div>
+        <section class="panel" aria-labelledby="what-nexa-does-title">
+          <p class="eyebrow">Local educational simulator</p>
+          <h2 id="what-nexa-does-title">Practice records, not real banking.</h2>
+          <p>Nexa stores synthetic accounts and practice activity in this application. It is not connected to a bank, payment network, biller, identity provider, or message-delivery service.</p>
+        </section>
+        <section class="panel" aria-labelledby="money-actions-help-title">
+          <h2 id="money-actions-help-title">How money actions work</h2>
+          <ul>
+            <li><strong>Cash-in:</strong> records a practice credit. It does not draw money from an outside account.</li>
+            <li><strong>Transfers:</strong> move practice funds between Nexa accounts after you review and confirm the recipient and amount.</li>
+            <li><strong>Demo bills:</strong> create a simulated ledger entry. No biller receives a payment or settlement notice.</li>
+            <li><strong>Savings goals:</strong> move funds between available balance and your own goal. Contributions and withdrawals are not income or spending.</li>
+            <li><strong>Receipts:</strong> show the matching local ledger entry. They do not prove that an outside bank or biller was paid.</li>
+          </ul>
+        </section>
+        <section class="panel" aria-labelledby="uncertain-result-title">
+          <h2 id="uncertain-result-title">If a result is unclear</h2>
+          <p>Return to account activity and check for the entry or its receipt before retrying. A page response alone does not confirm an external payment; this simulator makes no external payment.</p>
+          <a class="text-link" th:href="@{/activity}">Check account activity</a>
+        </section>
+        <section class="panel" id="security" aria-labelledby="account-security-help-title">
+          <h2 id="account-security-help-title">Account access and support</h2>
+          <p>Change your PIN from Settings by confirming your current four-digit PIN. The current browser signs out after a successful change. Use a synthetic practice PIN and never enter a real banking PIN.</p>
+          <p>Forgotten-PIN recovery, identity verification, disputes, external support, and complaint channels are not configured in this local project. Do not enter real identity or account information.</p>
+          <a class="text-link" th:href="@{/settings}">Open account settings</a>
+        </section>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('help')}"></nav>
+</body>
+</html>

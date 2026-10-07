@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Create and review local Nexa Bank demo money requests.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
+  <title>Request money | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to money requests</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('transfer')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content form-page">
+        <div class="page-heading-row"><div><p class="eyebrow">SEND / REQUEST MONEY</p><h1>Make it easy to settle up.</h1><p class="muted">A request is a local reminder. It never moves money unless the recipient reviews and confirms.</p></div></div>
+        <nav class="money-mode-tabs" aria-label="Money actions">
+          <a class="button button-quiet" th:href="@{/transfer}">Send</a>
+          <a class="button button-primary" th:href="@{/request}" aria-current="page">Request</a>
+        </nav>
+        <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
+        <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
+        <div class="operation-layout request-create-layout">
+          <section class="panel operation-form-panel" aria-labelledby="request-title">
+            <p class="eyebrow">ASK ANOTHER NEXA CUSTOMER</p><h2 id="request-title">Create a money request.</h2>
+            <form method="post" th:action="@{/money-requests}" class="form-stack" th:if="${accountsAvailable and !#lists.isEmpty(eligibleAccounts)}">
+              <label for="request-account">Receive into</label>
+              <select id="request-account" name="requesterAccountId" required>
+                <option th:each="account : ${eligibleAccounts}" th:value="${account.id}"
+                        th:selected="${account.id == user.bankAccount.id}"
+                        th:text="${account.accountName + ' · ' + account.currencyCode + ' ' + #numbers.formatDecimal(account.balance, 1, 'COMMA', 2, 'POINT')}">Everyday · PHP 24,850.00</option>
+              </select>
+              <label for="request-payer-account">Recipient's Nexa account number</label>
+              <input id="request-payer-account" name="payerAccountNumber" type="text" inputmode="numeric" autocomplete="off"
+                     pattern="(?:[0-9]{12}|[0-9]{4} [0-9]{4} [0-9]{4})" minlength="12" maxlength="14"
+                     placeholder="1234 5678 9012" aria-describedby="request-payer-hint" required>
+              <p class="field-hint" id="request-payer-hint">The recipient must have an active account in the same currency.</p>
+              <label for="request-amount">Amount <span class="muted">(PHP)</span></label>
+              <div class="money-input"><span aria-hidden="true">₱</span><input id="request-amount" name="amount" type="number" min="0.01" max="9999999999999.99" step="0.01" inputmode="decimal" placeholder="0.00" required></div>
+              <label for="request-note">Note <span class="muted">(optional)</span></label>
+              <textarea id="request-note" name="note" maxlength="140" rows="3" placeholder="What are you settling up for?"></textarea>
+              <button class="button button-primary button-wide" type="submit">Send request <span aria-hidden="true">→</span></button>
+            </form>
+            <div class="empty-state" role="status" th:if="${!accountsAvailable}"><strong>Accounts are unavailable.</strong><p>Request preparation is paused.</p></div>
+            <div class="empty-state" role="status" th:if="${accountsAvailable and #lists.isEmpty(eligibleAccounts)}"><strong>No active PHP account found.</strong><p>Open a practice account before creating a request.</p><a class="text-link" th:href="@{/accounts}">Open an account ↗</a></div>
+          </section>
+          <aside class="panel recipient-aside">
+            <div class="section-heading"><div><p class="eyebrow">YOUR PEOPLE</p><h2>Saved recipients</h2></div><span class="aside-icon" aria-hidden="true">♧</span></div>
+            <p class="muted">Use a saved Nexa account number when creating a request.</p>
+            <ul class="recipient-list" th:if="${savedRecipientsAvailable and !#lists.isEmpty(savedRecipients)}">
+              <li th:each="saved : ${savedRecipients}"><span class="avatar avatar-small" th:text="${#strings.substring(saved.label, 0, 1)}">M</span><span><strong th:text="${saved.label}">Maria Reyes</strong><small th:text="${saved.accountNumber}">100000000001</small></span></li>
+            </ul>
+            <p class="field-hint" role="status" th:if="${!savedRecipientsAvailable}">Saved recipients are temporarily unavailable.</p>
+            <p class="field-hint" th:if="${savedRecipientsAvailable and #lists.isEmpty(savedRecipients)}">No saved recipients yet. Add one from the Transfer page.</p>
+          </aside>
+        </div>
+        <div class="request-lists" th:if="${requestsAvailable}">
+          <section class="panel request-list-panel" aria-labelledby="incoming-requests-title">
+            <div class="section-heading"><div><p class="eyebrow">NEEDS YOUR REVIEW</p><h2 id="incoming-requests-title">Incoming requests</h2></div></div>
+            <div class="empty-state" th:if="${#lists.isEmpty(incomingRequests)}"><strong>You're all caught up.</strong><p>Requests addressed to this Nexa profile will appear here.</p></div>
+            <article class="request-row" th:each="request : ${incomingRequests}">
+              <div class="request-row-heading"><span class="avatar avatar-small" th:text="${#strings.substring(request.requesterName, 0, 1)}">M</span>
+                <div><strong th:text="${request.requesterName}">Maria Reyes</strong><small th:text="${request.requesterAccountName + ' · account ending ' + request.requesterAccountLastFour}">Everyday · account ending 9012</small></div>
+                <strong class="request-amount" th:text="${(request.currencyCode == 'PHP' ? '₱' : '$') + #numbers.formatDecimal(request.amount, 1, 'COMMA', 2, 'POINT')}">₱1,500.00</strong>
+              </div>
+              <p class="request-note" th:if="${!#strings.isEmpty(request.note)}" th:text="${request.note}">Dinner last night</p>
+              <div class="request-row-foot"><span class="status-pill" th:classappend="${request.pending} ? ' status-active' : ' status-muted'" th:text="${request.status}">PENDING</span>
+                <time th:datetime="${request.createdAt}" th:text="${#temporals.format(request.createdAt, 'MMM d, yyyy · h:mm a')}">Oct 7, 2026</time></div>
+              <div class="request-actions" th:if="${request.pending}">
+                <form method="post" th:action="@{/money-requests/{id}/pay/review(id=${request.id})}" th:if="${!#lists.isEmpty(eligibleAccounts)}">
+                  <label class="sr-only" th:for="${'request-source-' + request.id}">Pay from account</label>
+                  <select th:id="${'request-source-' + request.id}" name="sourceAccountId" required>
+                    <option th:each="account : ${eligibleAccounts}" th:if="${account.currencyCode == request.currencyCode}"
+                            th:value="${account.id}" th:text="${account.accountName + ' · ' + account.currencyCode}">Everyday · PHP</option>
+                  </select>
+                  <button class="button button-primary" type="submit">Review &amp; pay</button>
+                </form>
+                <form method="post" th:action="@{/money-requests/{id}/decline(id=${request.id})}"><button class="button button-quiet" type="submit">Decline</button></form>
+              </div>
+            </article>
+          </section>
+          <section class="panel request-list-panel" aria-labelledby="outgoing-requests-title">
+            <div class="section-heading"><div><p class="eyebrow">WAITING FOR A RESPONSE</p><h2 id="outgoing-requests-title">Your requests</h2></div></div>
+            <div class="empty-state" th:if="${#lists.isEmpty(outgoingRequests)}"><strong>No requests sent yet.</strong><p>Your local requests will stay visible here until resolved.</p></div>
+            <article class="request-row" th:each="request : ${outgoingRequests}">
+              <div class="request-row-heading"><span class="avatar avatar-small" th:text="${#strings.substring(request.payerName, 0, 1)}">J</span>
+                <div><strong th:text="${'To ' + request.payerName}">To Juan Cruz</strong><small th:text="${request.requesterAccountName + ' · account ending ' + request.requesterAccountLastFour}">Everyday · account ending 9012</small></div>
+                <strong class="request-amount" th:text="${(request.currencyCode == 'PHP' ? '₱' : '$') + #numbers.formatDecimal(request.amount, 1, 'COMMA', 2, 'POINT')}">₱1,500.00</strong>
+              </div>
+              <p class="request-note" th:if="${!#strings.isEmpty(request.note)}" th:text="${request.note}">Dinner last night</p>
+              <div class="request-row-foot"><span class="status-pill" th:classappend="${request.pending} ? ' status-active' : ' status-muted'" th:text="${request.status}">PENDING</span>
+                <time th:datetime="${request.createdAt}" th:text="${#temporals.format(request.createdAt, 'MMM d, yyyy · h:mm a')}">Oct 7, 2026</time></div>
+              <form method="post" th:action="@{/money-requests/{id}/cancel(id=${request.id})}" th:if="${request.pending}">
+                <button class="button button-quiet" type="submit">Cancel request</button>
+              </form>
+            </article>
+          </section>
+        </div>
+        <div class="empty-state panel" role="status" th:unless="${requestsAvailable}"><strong>Money requests are unavailable.</strong><p>Your saved accounts and requests have not changed.</p></div>
+        <div class="demo-disclaimer"><span aria-hidden="true">ⓘ</span> Requests are stored only in the Nexa demo database. Paying one moves local practice funds after a separate review; there are no push alerts or external payments.</div>
+        <footer class="page-footer"><a th:href="@{/dashboard}">← Back to dashboard</a><a th:href="@{/activity}">Review account activity</a></footer>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('transfer')}"></nav>
+</body>
+</html>

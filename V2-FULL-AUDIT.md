@@ -3,6 +3,8 @@
 **Audit date:** 2026-09-12
 **Scope:** Design, UX, portfolio readiness, application behavior, code quality, project structure, security, database, testing, and missing features.
 
+Historical audit snapshot: file paths and implementation status reflect 2026-09-12. Current Banking App v2 migration and feature delivery status is recorded in `context/SAURON-DELIVERY.md` and `context/DELIVERY-CHECKPOINT.md`.
+
 ## Executive verdict
 
 V2 is a presentable local banking MVP, but it is not yet a full-fledged banking portfolio application and must not be presented as production banking software.

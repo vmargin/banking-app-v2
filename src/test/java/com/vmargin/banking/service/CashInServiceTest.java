@@ -33,7 +33,7 @@ class CashInServiceTest {
     }
 
     @Test
-    void cashInUpdatesTheAccountAndDelegatesPersistence() throws Exception {
+    void cashInReturnsCommittedBalanceWithoutMutatingSnapshot() throws Exception {
         BigDecimal balance = service.cashIn(
             user,
             new BigDecimal("125.00"),
@@ -41,7 +41,7 @@ class CashInServiceTest {
         );
 
         assertEquals(new BigDecimal("2625.00"), balance);
-        assertEquals(new BigDecimal("2625.00"), user.getBalance());
+        assertEquals(new BigDecimal("2500.00"), user.getBalance());
         assertEquals(new BigDecimal("125.00"), repository.amount);
     }
 
@@ -66,6 +66,13 @@ class CashInServiceTest {
             String details,
             LocalDateTime occurredAt
         ) {
+            amount = cashInAmount;
+            return new BigDecimal("2625.00");
+        }
+
+        @Override
+        public BigDecimal cashInAccount(long userId, long accountId, BigDecimal cashInAmount,
+                                        String details, LocalDateTime occurredAt, String reference) {
             amount = cashInAmount;
             return new BigDecimal("2625.00");
         }

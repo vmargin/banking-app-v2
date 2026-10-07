@@ -70,7 +70,7 @@ public class User {
     }
 
     public boolean matchesPin(String candidatePin) {
-        return pin.equals(candidatePin);
+        return com.vmargin.banking.util.PinHasher.matches(candidatePin, pin);
     }
 
     public String getFullName() {

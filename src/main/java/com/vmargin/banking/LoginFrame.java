@@ -1400,7 +1400,7 @@ public class LoginFrame extends JFrame {
     }
 
     static String formatTransactionAmount(TransactionType type, BigDecimal amount) {
-        String sign = type == TransactionType.TRANSFER_SENT ? "- " : "+ ";
+        String sign = type.isIncoming() ? "+ " : "- ";
         return sign + formatCurrency(amount);
     }
 
@@ -1409,6 +1409,10 @@ public class LoginFrame extends JFrame {
             case CASH_IN -> "Cash in";
             case TRANSFER_SENT -> "Transfer sent";
             case TRANSFER_RECEIVED -> "Transfer received";
+            case CARD_PURCHASE -> "Card purchase";
+            case SAVINGS_CONTRIBUTION -> "Savings contribution";
+            case SAVINGS_WITHDRAWAL -> "Savings withdrawal";
+            case BILL_PAYMENT -> "Simulated bill payment";
         };
     }
 }

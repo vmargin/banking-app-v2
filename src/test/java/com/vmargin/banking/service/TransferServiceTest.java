@@ -33,7 +33,7 @@ class TransferServiceTest {
     }
 
     @Test
-    void transferDebitsTheSenderAfterPersistenceSucceeds() throws Exception {
+    void transferReturnsCommittedBalanceWithoutMutatingSnapshot() throws Exception {
         BigDecimal balance = service.transfer(
             sender,
             "09990000002",
@@ -41,7 +41,7 @@ class TransferServiceTest {
         );
 
         assertEquals(new BigDecimal("2000.00"), balance);
-        assertEquals(new BigDecimal("2000.00"), sender.getBalance());
+        assertEquals(new BigDecimal("2500.00"), sender.getBalance());
         assertEquals("09990000002", repository.recipientMobileNumber);
         assertEquals(new BigDecimal("500.00"), repository.amount);
     }
@@ -72,6 +72,12 @@ class TransferServiceTest {
             recipientMobileNumber = recipientMobile;
             amount = transferAmount;
             return new BigDecimal("2000.00");
+        }
+
+        @Override
+        public BigDecimal transferToAccount(long senderId, long sourceAccountId, String recipientAccountNumber,
+                                            BigDecimal transferAmount, LocalDateTime occurredAt, String reference) {
+            throw new UnsupportedOperationException("Account-number transfers are not used by this fixture");
         }
     }
 }

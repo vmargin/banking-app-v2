@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Review a simulated Nexa account transfer before recording it.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
+  <title>Transfer | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to transfer</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('transfer')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content form-page">
+        <div class="page-heading-row"><div><p class="eyebrow">MOVE MONEY</p><h1>Send it with confidence.</h1><p class="muted">Review the account and amount before the local ledger changes.</p></div></div>
+        <nav class="money-mode-tabs" aria-label="Money actions">
+          <a class="button button-primary" th:href="@{/transfer}" aria-current="page">Send</a>
+          <a class="button button-quiet" th:href="@{/request}">Request</a>
+        </nav>
+        <div class="alert error" role="alert" th:if="${transferError}" th:text="${transferError}"></div>
+        <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
+        <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
+        <div class="operation-layout">
+          <section class="panel operation-form-panel" aria-labelledby="transfer-title">
+            <p class="eyebrow">NEXA TO NEXA</p><h2 id="transfer-title">Prepare a transfer.</h2>
+            <form method="post" th:action="@{/transfer/review}" class="form-stack" th:if="${accountsAvailable and !#lists.isEmpty(eligibleAccounts)}">
+              <label for="source-account">From account</label>
+              <select id="source-account" name="sourceAccountId" data-currency-select required>
+                <option th:each="account : ${eligibleAccounts}" th:value="${account.id}"
+                        th:selected="${account.id == user.bankAccount.id}"
+                        th:attr="data-currency=${account.currencyCode}"
+                        th:text="${account.accountName + ' · ' + account.currencyCode + ' ' + #numbers.formatDecimal(account.balance, 1, 'COMMA', 2, 'POINT')}">Everyday · PHP 24,850.00</option>
+              </select>
+              <div th:if="${savedRecipientsAvailable and !#lists.isEmpty(savedRecipients)}">
+                <label for="saved-recipient">Saved recipient</label>
+                <select id="saved-recipient" data-saved-recipient>
+                  <option value="">Choose a recipient</option>
+                  <option th:each="saved : ${savedRecipients}" th:value="${saved.accountNumber}"
+                          th:text="${saved.label + ' · ' + saved.accountNumber}">Maria Reyes · 100000000001</option>
+                </select>
+              </div>
+              <label for="recipient">Recipient Nexa account number</label>
+              <input id="recipient" name="recipient" type="text" inputmode="numeric" autocomplete="off"
+                     pattern="(?:[0-9]{12}|[0-9]{4} [0-9]{4} [0-9]{4})" minlength="12" maxlength="14" placeholder="1234 5678 9012"
+                     th:value="${transferRecipient}" aria-describedby="recipient-hint" required>
+              <p class="field-hint" id="recipient-hint">Use the 12-digit number from a Nexa demo account.</p>
+              <label for="transfer-amount">Amount <span class="muted" data-currency-label>(PHP)</span></label>
+              <div class="money-input"><span aria-hidden="true" data-currency-symbol>₱</span><input id="transfer-amount" name="amount" type="number" min="0.01" max="9999999999999.99" step="0.01" inputmode="decimal" placeholder="0.00" th:value="${transferAmount}" required></div>
+              <p class="field-hint">Transfers must use the same currency at both ends. No conversion or external transfer is available.</p>
+              <button class="button button-primary button-wide" type="submit">Review transfer <span aria-hidden="true">→</span></button>
+            </form>
+            <div class="empty-state" role="status" th:if="${!accountsAvailable}"><strong>Accounts are unavailable.</strong><p>Transfer preparation is paused.</p></div>
+            <div class="empty-state" role="status" th:if="${accountsAvailable and #lists.isEmpty(eligibleAccounts)}"><strong>No active accounts found.</strong><p>Open a practice account before preparing a transfer.</p><a class="text-link" th:href="@{/accounts}">Open account ↗</a></div>
+          </section>
+          <aside class="panel recipient-aside">
+            <div class="section-heading"><div><p class="eyebrow">YOUR PEOPLE</p><h2>Saved recipients</h2></div><span class="aside-icon" aria-hidden="true">♧</span></div>
+            <p class="muted">Save fictional Nexa account numbers to make your next practice transfer quicker.</p>
+            <form method="post" th:action="@{/recipients}" class="form-stack compact-form" id="save-recipient-form">
+              <label for="new-recipient-number">Account number</label>
+              <input id="new-recipient-number" name="recipientAccountNumber" type="text" inputmode="numeric" pattern="(?:[0-9]{12}|[0-9]{4} [0-9]{4} [0-9]{4})" minlength="12" maxlength="14" placeholder="1234 5678 9012" required>
+              <label for="new-recipient-label">Name or label</label>
+              <input id="new-recipient-label" name="label" type="text" maxlength="40" placeholder="e.g. Maria Reyes" required>
+              <button class="button button-secondary" type="submit">Save recipient</button>
+            </form>
+            <ul class="recipient-list" th:if="${savedRecipientsAvailable and !#lists.isEmpty(savedRecipients)}">
+              <li th:each="saved : ${savedRecipients}"><span class="avatar avatar-small" th:text="${#strings.substring(saved.label, 0, 1)}">M</span><span><strong th:text="${saved.label}">Maria Reyes</strong><small th:text="${saved.accountNumber}">100000000001</small></span>
+                <form method="post" th:action="@{/recipients/{id}/delete(id=${saved.id})}"><button class="remove-button" type="submit" th:aria-label="${'Remove ' + saved.label}">×</button></form>
+              </li>
+            </ul>
+            <p class="field-hint" role="status" th:if="${!savedRecipientsAvailable}">Saved recipients are temporarily unavailable.</p>
+            <p class="field-hint" th:if="${savedRecipientsAvailable and #lists.isEmpty(savedRecipients)}">No saved recipients yet.</p>
+          </aside>
+        </div>
+        <div class="demo-disclaimer"><span aria-hidden="true">ⓘ</span> Transfers only update two account balances and their ledger entries in this local simulator.</div>
+        <footer class="page-footer"><a th:href="@{/dashboard}">← Back to dashboard</a><a th:href="@{/activity}">Review recent activity</a></footer>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('transfer')}"></nav>
+  <script src="/js/dashboard.js" defer></script>
+</body>
+</html>

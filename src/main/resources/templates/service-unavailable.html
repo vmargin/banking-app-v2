@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071522">
+  <title>Service temporarily unavailable | Nexa Bank</title>
+  <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  </head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <main id="main" class="reference-auth-page">
+    <div class="reference-auth-shell">
+      <aside class="reference-auth-rail">
+        <a class="reference-brand" th:href="@{/login}" aria-label="Nexa Bank sign in">NEXA BANK</a>
+        <p>Local banking practice<br>with clear records.</p>
+        <button th:replace="~{fragments/theme-toggle :: themeToggle}"></button>
+        <small>Educational simulator</small>
+      </aside>
+      <section class="reference-auth-card" aria-labelledby="unavailable-title">
+        <p class="reference-kicker">Service status</p>
+        <h1 id="unavailable-title">Request temporarily unavailable</h1>
+        <p>No account or transaction details are shown here. Try again in a moment.</p>
+        <div class="alert error" role="alert">
+          If this followed a transfer or bill payment, check account activity or its receipt before trying again.
+        </div>
+        <p class="reference-auth-switch">
+          <a th:href="@{/activity}">Check account activity</a>
+          <span aria-hidden="true">·</span>
+          <a th:href="@{/login}">Sign in</a>
+        </p>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

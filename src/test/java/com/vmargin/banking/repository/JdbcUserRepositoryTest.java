@@ -16,7 +16,8 @@ class JdbcUserRepositoryTest {
     @Test
     void savesAndFindsUserByMobileNumber() throws SQLException {
         Assumptions.assumeTrue(
-            System.getenv("BANKING_DB_USER") != null
+            IsolatedPostgres.enabled()
+                && System.getenv("BANKING_DB_USER") != null
                 && System.getenv("BANKING_DB_PASSWORD") != null,
             "Database credentials are required"
         );

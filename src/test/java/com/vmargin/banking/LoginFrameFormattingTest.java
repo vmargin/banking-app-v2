@@ -45,4 +45,15 @@ class LoginFrameFormattingTest {
             )
         );
     }
+
+    @Test
+    void marksBillPaymentsAsOutgoing() {
+        assertEquals(
+            "- PHP 12.50",
+            LoginFrame.formatTransactionAmount(
+                TransactionType.BILL_PAYMENT,
+                new BigDecimal("12.50")
+            )
+        );
+    }
 }

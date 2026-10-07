@@ -27,17 +27,24 @@ public class RegistrationService {
         User newUser = new User(
             0L,
             mobileNumber.trim(),
-            pin,
+            com.vmargin.banking.util.PinHasher.hash(pin),
             fullName.trim(),
             new BankAccount("PENDING", fullName.trim(), BigDecimal.ZERO),
             UserRole.USER
         );
-        return repository.save(newUser);
+        try {
+            return repository.save(newUser);
+        } catch (SQLException exception) {
+            if ("23505".equals(exception.getSQLState())) {
+                throw new RegistrationException("A user already exists for this mobile number");
+            }
+            throw exception;
+        }
     }
 
     private void validate(String fullName, String mobileNumber, String pin) {
-        if (fullName == null || fullName.isBlank()) {
-            throw new RegistrationException("Full name is required");
+        if (fullName == null || fullName.isBlank() || fullName.trim().length() > 120) {
+            throw new RegistrationException("Full name must contain 1 to 120 characters");
         }
         if (mobileNumber == null || !mobileNumber.trim().matches("09\\d{9}")) {
             throw new RegistrationException("Use an 11-digit Philippine mobile number");

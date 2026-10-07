@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Review a simulated bill payment in the Nexa local ledger.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
+  <title>Pay bills | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to bill payments</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('payments')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content form-page">
+        <div class="page-heading-row"><div><p class="eyebrow">BILLS &amp; SERVICES</p><h1>Take care of the little things.</h1><p class="muted">Practice a bill-payment review with fictional billers.</p></div></div>
+        <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
+        <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
+        <div class="operation-layout">
+          <section class="panel operation-form-panel" aria-labelledby="payment-title">
+            <p class="eyebrow">DEMO PAYMENT</p><h2 id="payment-title">Choose a bill to practice.</h2>
+            <form method="post" th:action="@{/bills/review}" class="form-stack" th:if="${accountsAvailable and !#lists.isEmpty(eligibleAccounts)}">
+              <label for="payment-account">Pay from</label>
+              <select id="payment-account" name="accountId" required>
+                <option th:each="account : ${eligibleAccounts}" th:value="${account.id}"
+                        th:selected="${account.id == user.bankAccount.id}"
+                        th:text="${account.accountName + ' · ₱' + #numbers.formatDecimal(account.balance, 1, 'COMMA', 2, 'POINT')}">Everyday · ₱24,850.00</option>
+              </select>
+              <label for="biller">Biller</label>
+              <select id="biller" name="biller" required>
+                <option value="" selected disabled>Choose a demo biller</option>
+                <option th:each="biller : ${demoBillers}" th:value="${biller.name()}"
+                        th:text="${biller.displayLabel() + ' · Demo only'}">Demo electricity · Demo only</option>
+              </select>
+              <label for="bill-reference">Synthetic bill reference</label>
+              <input id="bill-reference" name="billReference" type="text" inputmode="numeric"
+                     pattern="[0-9]{8,20}" minlength="8" maxlength="20" autocomplete="off"
+                     placeholder="8 to 20 digits" aria-describedby="bill-reference-hint" required>
+              <p class="field-hint" id="bill-reference-hint">Only the last four digits are saved in your receipt.</p>
+              <label for="bill-amount">Amount</label>
+              <div class="money-input"><span aria-hidden="true">₱</span><input id="bill-amount" name="amount" type="number" min="0.01" max="9999999999999.99" step="0.01" inputmode="decimal" placeholder="0.00" required></div>
+              <button class="button button-primary button-wide" type="submit">Review payment <span aria-hidden="true">→</span></button>
+            </form>
+            <div class="empty-state" role="status" th:if="${!accountsAvailable}"><strong>Accounts are unavailable.</strong><p>Payment preparation is paused.</p></div>
+            <div class="empty-state" role="status" th:if="${accountsAvailable and #lists.isEmpty(eligibleAccounts)}"><strong>No active PHP accounts found.</strong><p>Only PHP demo accounts can record a bill payment.</p><a class="text-link" th:href="@{/accounts}">Open an account ↗</a></div>
+          </section>
+          <aside class="panel operation-aside">
+            <span class="aside-icon aside-icon-amber" aria-hidden="true">▣</span><p class="eyebrow">SYNTHETIC BILLERS</p>
+            <h2>Review before recording.</h2>
+            <p>Electricity, water, internet, mobile, and school fee entries are fictional. The app stores only a reference suffix.</p>
+            <div class="payment-category-grid"><span>⚡ Electricity</span><span>◉ Water</span><span>⌁ Internet</span><span>▣ Mobile</span></div>
+            <p class="card-footnote">No utility, school, or payment provider receives a payment.</p>
+          </aside>
+        </div>
+        <div class="demo-disclaimer"><span aria-hidden="true">ⓘ</span> Confirming creates one local debit and one receipt. It does not pay a real bill.</div>
+        <footer class="page-footer"><a th:href="@{/dashboard}">← Back to dashboard</a><a th:href="@{/activity}">View account activity</a></footer>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('payments')}"></nav>
+</body>
+</html>

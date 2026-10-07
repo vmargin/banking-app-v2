@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/app.css">
+  <title>Review savings move | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('savings')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content review-page"><section class="panel review-panel" aria-labelledby="review-title">
+      <p class="eyebrow">Five-minute confirmation</p>
+      <h1 id="review-title" th:text="${pendingSavings.contribution ? 'Review contribution' : 'Review withdrawal'}">Review savings move</h1>
+      <p>Confirm the goal and amount. No money moves until you confirm.</p>
+      <dl class="review-details">
+        <div><dt>Goal</dt><dd th:text="${pendingSavings.goalName}">Emergency fund</dd></div>
+        <div><dt>Action</dt><dd th:text="${pendingSavings.contribution ? 'Move from available balance into savings' : 'Return saved funds to available balance'}">Action</dd></div>
+        <div><dt>Amount</dt><dd th:text="${'₱' + #numbers.formatDecimal(pendingSavings.amount, 1, 'COMMA', 2, 'POINT')}">₱0.00</dd></div>
+      </dl>
+      <form method="post" th:action="@{/savings/confirm}" class="form-stack">
+        <input type="hidden" name="token" th:value="${pendingSavings.token}">
+        <button class="button button-primary button-wide" type="submit">Confirm savings move</button>
+      </form>
+      <form method="post" th:action="@{/savings/cancel}" class="review-cancel-form">
+        <input type="hidden" name="token" th:value="${pendingSavings.token}">
+        <button class="button button-quiet button-wide" type="submit">Cancel and return</button>
+      </form>
+    </section></main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('savings')}"></nav>
+</body>
+</html>

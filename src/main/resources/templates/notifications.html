@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Recent activity notices from the Nexa practice ledger.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
+  <title>Notifications | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to notifications</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('notifications')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content">
+        <div class="page-heading-row"><div><p class="eyebrow">ACCOUNT UPDATES</p><h1>Good things, in the know.</h1><p class="muted">These notices are generated from confirmed practice-ledger entries.</p></div><a class="button button-secondary" th:href="@{/activity}">Open activity <span aria-hidden="true">↗</span></a></div>
+        <p class="notification-feedback notification-feedback-success" role="status" th:if="${notificationMessage}" th:text="${notificationMessage}"></p>
+        <p class="notification-feedback notification-feedback-error" role="alert" th:if="${notificationError}" th:text="${notificationError}"></p>
+        <div class="demo-disclaimer"><span aria-hidden="true">ⓘ</span> Notifications are local activity summaries. The app does not send email, SMS, push messages, or security codes.</div>
+        <section class="panel notifications-panel" aria-labelledby="notification-list-title">
+          <div class="section-heading">
+            <div><p class="eyebrow">RECENT</p><h2 id="notification-list-title">Your updates</h2></div>
+            <div class="notice-actions" th:if="${noticesAvailable}">
+              <span class="status-pill status-active" th:if="${unreadNoticeCount > 0}"
+                    th:text="${unreadNoticeCount + ' unread'}">4 unread</span>
+              <span class="status-pill" th:if="${unreadNoticeCount == 0}">All caught up</span>
+              <form method="post" th:action="@{/notifications/read}"
+                    th:if="${unreadNoticeCount > 0}">
+                <button class="button button-secondary" type="submit">Mark all as read</button>
+              </form>
+            </div>
+          </div>
+          <ul class="notice-list" th:if="${noticesAvailable and !#lists.isEmpty(notices)}">
+            <li th:each="notice : ${notices}" class="notice-row"
+                th:classappend="${noticeReadIds.contains(notice.id)} ? ' notice-read' : ' notice-unread'">
+              <span class="notice-icon" th:classappend="${notice.type.isIncoming()} ? ' notice-positive' : ' notice-neutral'" aria-hidden="true">
+                <span th:text="${notice.type.isIncoming() ? '↙' : (notice.type.name() == 'CARD_PURCHASE' ? '▰' : '✓')}">✓</span>
+              </span>
+              <div class="notice-copy">
+                <div class="notice-title-row"><strong th:text="${notice.type.noticeTitle()}">Money received</strong>
+                  <span class="notice-state" th:unless="${noticeReadIds.contains(notice.id)}">New</span></div>
+                <p th:text="${notice.details}">Salary deposit</p>
+                <small><span th:text="${notice.accountName}">Everyday account</span><span aria-hidden="true"> · </span><time th:datetime="${notice.occurredAt}" th:text="${#temporals.format(notice.occurredAt, 'MMM d, yyyy · h:mm a')}">Today</time></small>
+              </div>
+              <strong class="transaction-amount" th:classappend="${notice.type.isIncoming()} ? ' amount-in' : ' amount-out'"
+                      th:text="${(notice.type.isIncoming() ? '+ ' : '− ') + (notice.currencyCode == 'PHP' ? '₱' : '$') + #numbers.formatDecimal(notice.amount, 1, 'COMMA', 2, 'POINT')}">+ ₱30,000.00</strong>
+            </li>
+          </ul>
+          <div class="empty-state" th:if="${noticesAvailable and #lists.isEmpty(notices)}"><strong>You’re all caught up.</strong><p>New confirmed ledger entries will appear here.</p></div>
+          <div class="empty-state" role="status" th:unless="${noticesAvailable}"><strong>Updates are unavailable.</strong><p>Your ledger has not changed.</p></div>
+        </section>
+        <footer class="page-footer"><a th:href="@{/dashboard}">← Back to dashboard</a><a th:href="@{/settings}">Review security settings</a></footer>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('notifications')}"></nav>
+</body>
+</html>

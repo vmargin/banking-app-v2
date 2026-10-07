@@ -1,38 +1,60 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Create an account in the CASH-G educational banking simulator.">
-  <title>Create account | CASH-G</title>
+  <meta name="theme-color" content="#071321">
+  <meta name="description" content="Create a local Nexa Bank practice account.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/css/app.css">
+  <title>Create account | Nexa Bank</title>
 </head>
-<body class="reference-auth-page">
-  <a class="skip-link" href="#main-content">Skip to account creation</a>
-  <main id="main-content" class="reference-auth-shell">
-    <aside class="reference-auth-rail">
-      <a class="reference-brand" href="/login" aria-label="CASH-G sign in">CASH-G</a>
-      <p>Learn.<br>Practice.<br>Record.</p>
-      <nav class="reference-nav" aria-label="Authentication navigation"><a href="/login">Sign in</a><a href="/register" aria-current="page">Create account</a></nav>
-      <small>Local educational banking simulator</small>
-    </aside>
-    <section class="reference-auth-card" aria-labelledby="register-title">
-      <p class="reference-kicker">Create your account</p>
-      <h1 id="register-title">Start with a local test account.</h1>
-      <p>Use test details only. This simulator is not connected to a bank.</p>
-      <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
-      <form method="post" action="/register" class="reference-auth-form">
-        <label for="full-name">Full name</label>
-        <input id="full-name" name="fullName" type="text" autocomplete="name" placeholder="Enter your full name" required>
-        <label for="mobile">Mobile number</label>
-        <input id="mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="tel" pattern="09[0-9]{9}" minlength="11" maxlength="11" placeholder="09XXXXXXXXX" aria-describedby="mobile-hint" required>
-        <p id="mobile-hint" class="reference-input-hint">Use 11 digits, starting with 09.</p>
-        <label for="pin">Create a four-digit PIN</label>
-        <input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="new-password" pattern="[0-9]{4}" minlength="4" maxlength="4" placeholder="••••" aria-describedby="pin-hint" required>
-        <p id="pin-hint" class="reference-input-hint">Use four digits for this local test account.</p>
-        <button class="reference-primary" type="submit">Create account <span aria-hidden="true">→</span></button>
-      </form>
-      <p class="reference-auth-switch">Already registered? <a href="/login">Open your account desk</a></p>
+<body class="auth-body">
+  <a class="skip-link" href="#register-title">Skip to account creation</a>
+  <main class="auth-shell auth-register-shell">
+    <section class="auth-story">
+      <a class="brand brand-auth" th:href="@{/login}" aria-label="Nexa Bank home">
+        <img src="/favicon.svg" width="38" height="38" alt=""><span>NEXA <small>BANK</small></span>
+      </a>
+      <div class="auth-story-copy">
+        <p class="eyebrow">YOUR NEXT CHAPTER STARTS HERE</p>
+        <h1>Bank for a<br><span>brighter tomorrow.</span></h1>
+        <p class="auth-lede">Create a fictional account and explore a complete practice banking experience.</p>
+      </div>
+      <div class="auth-story-orb auth-orb-one" aria-hidden="true"></div>
+      <div class="auth-story-orb auth-orb-two" aria-hidden="true"></div>
+      <p class="auth-story-note">All data is synthetic and stays in the local demo database.</p>
+    </section>
+    <section class="auth-form-side" aria-labelledby="register-title">
+      <div class="auth-card">
+        <div class="auth-preferences"><button th:replace="~{fragments/theme-toggle :: themeToggle}"></button></div>
+        <p class="eyebrow">CREATE YOUR PROFILE</p>
+        <h2 id="register-title">Start with the basics.</h2>
+        <p class="auth-intro">Use test details only. Nexa is not connected to a real bank.</p>
+        <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
+        <form method="post" th:action="@{/register}" class="form-stack">
+          <label for="full-name">Full name</label>
+          <input id="full-name" name="fullName" type="text" autocomplete="name" maxlength="120"
+                 th:value="${fullName}"
+                 placeholder="Enter your name" required>
+          <label for="mobile">Mobile number</label>
+          <input id="mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="tel"
+                 th:value="${mobile}"
+                 pattern="09[0-9]{9}" minlength="11" maxlength="11" placeholder="09XXXXXXXXX"
+                 aria-describedby="mobile-hint" required>
+          <p class="field-hint" id="mobile-hint">Use 11 digits, starting with 09.</p>
+          <label for="pin">Create a four-digit PIN</label>
+          <div class="pin-field"><input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="new-password"
+                 pattern="[0-9]{4}" minlength="4" maxlength="4" placeholder="••••"
+                 aria-describedby="pin-hint" required><button class="pin-toggle" type="button" data-pin-toggle aria-controls="pin" aria-pressed="false" hidden>Show PIN</button></div>
+          <p class="field-hint" id="pin-hint">Choose a practice PIN. Never use a real banking PIN.</p>
+          <button class="button button-primary button-wide" type="submit">Create account <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="auth-switch">Already have an account? <a th:href="@{/login}">Sign in</a></p>
+      </div>
+      <p class="auth-legal">This demo stores only fictional practice data in its local database.</p>
     </section>
   </main>
 </body>

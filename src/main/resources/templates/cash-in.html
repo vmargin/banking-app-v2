@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Record a simulated PHP cash-in in the Nexa practice ledger.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
+  <title>Add money | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to cash-in</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('cash-in')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content form-page">
+        <div class="page-heading-row"><div><p class="eyebrow">ADD MONEY</p><h1>Record funds in.</h1><p class="muted">A simulated cash-in lets you practice a money-in ledger entry.</p></div></div>
+        <div class="alert error" role="alert" th:if="${cashInError}" th:text="${cashInError}"></div>
+        <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
+        <div class="operation-layout">
+          <section class="panel operation-form-panel" aria-labelledby="cash-in-title">
+            <p class="eyebrow">LOCAL LEDGER ENTRY</p><h2 id="cash-in-title">Choose where it goes.</h2>
+            <form method="post" th:action="@{/cash-in}" class="form-stack">
+              <input type="hidden" name="token" th:value="${cashInToken}">
+              <label for="cash-account">PHP account</label>
+              <select id="cash-account" name="accountId" required>
+                <option th:each="account : ${eligibleAccounts}" th:value="${account.id}"
+                        th:selected="${account.id == user.bankAccount.id}"
+                        th:text="${account.accountName + ' · ₱' + #numbers.formatDecimal(account.balance, 1, 'COMMA', 2, 'POINT')}">Everyday · ₱24,850.00</option>
+              </select>
+              <p class="field-hint">Only active PHP accounts can receive a practice cash-in.</p>
+              <label for="cash-amount">Amount</label>
+              <div class="money-input"><span aria-hidden="true">₱</span><input id="cash-amount" name="amount" type="number" min="0.01" max="9999999999999.99" step="0.01" inputmode="decimal" placeholder="0.00" th:value="${cashInAmount}" required></div>
+              <label for="cash-details">Description</label>
+              <input id="cash-details" name="details" type="text" maxlength="255" autocomplete="off"
+                     th:value="${cashInDetails == null ? 'Practice cash-in' : cashInDetails}" placeholder="e.g. Cash deposit" required>
+              <button class="button button-primary button-wide" type="submit">Review cash-in <span aria-hidden="true">→</span></button>
+            </form>
+          </section>
+          <aside class="panel operation-aside">
+            <span class="aside-icon" aria-hidden="true">＋</span><p class="eyebrow">A SAFE PRACTICE SPACE</p>
+            <h2>Nothing leaves your device.</h2>
+            <p>This action records synthetic funds in the local Nexa database. It does not contact a bank, wallet, or cash-in provider.</p>
+            <ul class="plain-check-list"><li>Choose an account you own</li><li>Check the amount before saving</li><li>Review the ledger entry afterward</li></ul>
+          </aside>
+        </div>
+        <div class="empty-state panel" role="status" th:if="${!accountsAvailable}"><strong>Your accounts are unavailable.</strong><p>Cash-in is paused until account data can be loaded.</p></div>
+        <div class="empty-state panel" role="status" th:if="${accountsAvailable and #lists.isEmpty(eligibleAccounts)}"><strong>No active PHP accounts found.</strong><p>Open a PHP savings account before recording practice funds.</p><a class="text-link" th:href="@{/accounts}">Open account ↗</a></div>
+        <footer class="page-footer"><a th:href="@{/dashboard}">← Back to dashboard</a><a th:href="@{/help}">Demo guide</a></footer>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('cash-in')}"></nav>
+</body>
+</html>

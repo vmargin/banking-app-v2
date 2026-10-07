@@ -1,51 +1,41 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Review a CASH-G transfer before recording it.">
-  <title>Review transfer | CASH-G</title>
-  <link rel="stylesheet" href="/css/app.css">
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Review a Nexa practice transfer before confirming it.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
+  <title>Review transfer | Nexa Bank</title>
 </head>
-<body class="app-page reference-page reference-review-page">
-  <a class="skip-link" href="#review-record">Skip to transfer review</a>
-  <div class="reference-shell">
-    <aside class="reference-rail" aria-label="Account navigation">
-      <a class="reference-brand" href="/dashboard" aria-label="CASH-G account desk">CASH-G</a>
-      <p class="reference-tagline">Practice today.<br>Build better records tomorrow.</p>
-      <nav class="reference-nav">
-        <a href="/dashboard">Account desk</a>
-        <a href="/dashboard#records">Records</a>
-        <a href="#review-record" aria-current="page">Review transfer</a>
-      </nav>
-      <div class="reference-rail-note"><strong>Local educational simulator</strong><span>PHP account records</span></div>
-    </aside>
-    <div class="reference-workspace">
-      <header class="reference-topbar">
-        <div><p class="reference-kicker">Clear Ledger</p><h1>Review your transfer.</h1></div>
-        <a class="reference-back" href="/dashboard">← Back to account desk</a>
-      </header>
-      <main id="review-record" class="reference-main reference-review-main">
-        <section class="reference-review" aria-labelledby="review-title">
-          <header>
-            <p class="reference-kicker">Transfer review</p>
-            <h2 id="review-title">Confirm the details.</h2>
-            <p>Check the recipient and amount. Confirming records the transfer and updates both account balances.</p>
-          </header>
-          <dl class="reference-review-details">
-            <div><dt>From</dt><dd th:text="${user.fullName}">Account holder</dd></div>
-            <div><dt>Recipient mobile</dt><dd th:text="${recipient}">09990000000</dd></div>
-            <div><dt>Transfer amount</dt><dd th:text="${'₱' + #numbers.formatDecimal(amount, 1, 2)}">₱0.00</dd></div>
-            <div><dt>Estimated balance after transfer</dt><dd th:text="${'₱' + #numbers.formatDecimal(remainingBalance, 1, 2)}">₱0.00</dd></div>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to transfer review</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('transfer')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content review-page">
+        <div class="page-heading-row"><div><p class="eyebrow">ONE LAST LOOK</p><h1>Review your transfer.</h1><p class="muted">Check both accounts and the amount before you record the ledger entry.</p></div></div>
+        <section class="panel review-panel" aria-labelledby="review-title">
+          <div class="review-checkmark" aria-hidden="true">↗</div><p class="eyebrow">TRANSFER REVIEW</p><h2 id="review-title">Ready when you are.</h2>
+          <dl class="review-details">
+            <div><dt>From</dt><dd><strong th:text="${sourceAccountName}">Everyday account</strong><small th:text="${user.fullName}">Miguel Santos</small></dd></div>
+            <div><dt>To</dt><dd><strong th:text="${recipientName}">Maria Reyes</strong><small th:text="${recipient}">100000000001</small></dd></div>
+            <div><dt>Amount</dt><dd class="review-money" th:text="${(currencyCode == 'PHP' ? '₱' : '$') + #numbers.formatDecimal(amount, 1, 'COMMA', 2, 'POINT')}">₱1,500.00</dd></div>
+            <div><dt>Transfer fee</dt><dd th:text="${(currencyCode == 'PHP' ? '₱' : '$') + #numbers.formatDecimal(transferFee, 1, 'COMMA', 2, 'POINT')}">₱0.00</dd></div>
+            <div class="review-total"><dt>Total debit</dt><dd th:text="${(currencyCode == 'PHP' ? '₱' : '$') + #numbers.formatDecimal(totalDebit, 1, 'COMMA', 2, 'POINT')}">₱1,500.00</dd></div>
+            <div><dt>Balance after</dt><dd th:text="${(currencyCode == 'PHP' ? '₱' : '$') + #numbers.formatDecimal(remainingBalance, 1, 'COMMA', 2, 'POINT')}">₱23,350.00</dd></div>
           </dl>
-          <aside class="reference-review-note"><strong>Local educational transfer</strong><p>Canceling this review leaves your balance unchanged.</p></aside>
-          <div class="reference-review-actions">
-            <form method="post" action="/transfer/confirm"><button class="reference-primary" type="submit">Confirm transfer <span aria-hidden="true">→</span></button></form>
-            <form method="post" action="/transfer/cancel"><button class="reference-secondary" type="submit">Cancel review</button></form>
+          <div class="review-note"><span aria-hidden="true">ⓘ</span><p>Confirming updates the sender and recipient balances in this local practice database. No payment rail is contacted.</p></div>
+          <div class="review-actions">
+            <form method="post" th:action="@{/transfer/confirm}"><input type="hidden" name="token" th:value="${operationToken}"><button class="button button-primary button-wide" type="submit">Confirm practice transfer <span aria-hidden="true">→</span></button></form>
+            <form method="post" th:action="@{/transfer/cancel}"><input type="hidden" name="token" th:value="${operationToken}"><button class="button button-quiet button-wide" type="submit">Cancel and go back</button></form>
           </div>
         </section>
+        <p class="review-expiry">This review expires after five minutes and can only be confirmed once.</p>
       </main>
     </div>
   </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('transfer')}"></nav>
 </body>
 </html>

@@ -1,4 +1,4 @@
-param([ValidateSet('doctor','style','compile','test','verify','run','package')][string]$Task = 'doctor')
+param([ValidateSet('doctor','style','compile','test','verify','run','demo','package','migrate','seed')][string]$Task = 'doctor')
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $jdkRoot = Join-Path $env:ProgramFiles 'Eclipse Adoptium'
@@ -20,6 +20,15 @@ try {
             verify { & .\mvnw.cmd --batch-mode verify }
             package { & .\mvnw.cmd --batch-mode package }
             run { & .\mvnw.cmd --batch-mode spring-boot:run }
+            demo { & .\mvnw.cmd --batch-mode spring-boot:run '-Dspring-boot.run.profiles=demo' }
+            migrate {
+                & .\mvnw.cmd --batch-mode spring-boot:run '-Dspring-boot.run.profiles=postgres-maintenance' `
+                    '-Dspring-boot.run.arguments=--banking.maintenance.operation=migrate'
+            }
+            seed {
+                & .\mvnw.cmd --batch-mode spring-boot:run '-Dspring-boot.run.profiles=postgres-maintenance' `
+                    '-Dspring-boot.run.arguments=--banking.maintenance.operation=seed'
+            }
         }
         if ($LASTEXITCODE -ne 0) { throw "Maven task '$Task' failed with exit code $LASTEXITCODE." }
     } finally { Pop-Location }

@@ -1,66 +1,70 @@
 package com.vmargin.banking.web;
 
 import com.vmargin.banking.model.User;
-import com.vmargin.banking.service.CashInService;
 import com.vmargin.banking.service.LoginService;
 import com.vmargin.banking.service.RegistrationService;
-import com.vmargin.banking.service.TransactionHistoryService;
-import com.vmargin.banking.service.TransferService;
+import com.vmargin.banking.service.exception.RegistrationException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.List;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/** Owns sign-in, registration, and the HTTP authentication boundary. */
 @Controller
-@RequestMapping
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class BankingWebController {
-
-    private static final String USER_SESSION_KEY = "authenticatedUser";
-    private static final String ACTION_ERROR_SESSION_KEY = "actionError";
-    private static final String ACTION_SUCCESS_SESSION_KEY = "actionSuccess";
-    private static final String PENDING_TRANSFER_SESSION_KEY = "pendingTransfer";
     private final LoginService loginService;
     private final RegistrationService registrationService;
-    private final CashInService cashInService;
-    private final TransferService transferService;
-    private final TransactionHistoryService historyService;
+    private final HttpSessionSecurityContextRepository contexts;
 
-    public BankingWebController(
-        LoginService loginService,
-        RegistrationService registrationService,
-        CashInService cashInService,
-        TransferService transferService,
-        TransactionHistoryService historyService
-    ) {
+    public BankingWebController(LoginService loginService, RegistrationService registrationService,
+                                HttpSessionSecurityContextRepository contexts) {
         this.loginService = loginService;
         this.registrationService = registrationService;
-        this.cashInService = cashInService;
-        this.transferService = transferService;
-        this.historyService = historyService;
+        this.contexts = contexts;
     }
 
     @GetMapping({"/", "/login"})
-    public String loginPage() {
+    public String loginPage(@RequestParam(required = false) boolean pinChanged, Model model) {
+        if (pinChanged) {
+            model.addAttribute("success", "Your PIN changed. Sign in with your new PIN.");
+        }
         return "login";
     }
 
     @PostMapping("/login")
-    public String login(
-        @RequestParam String mobile,
-        @RequestParam String pin,
-        HttpSession session,
-        Model model
-    ) {
+    public String login(@RequestParam String mobile, @RequestParam String pin,
+                        HttpServletRequest request, HttpServletResponse response, Model model) {
+        model.addAttribute("mobile", mobile);
         try {
-            session.setAttribute(USER_SESSION_KEY, loginService.login(mobile, pin));
+            User user = loginService.login(mobile, pin);
+            HttpSession session = request.getSession();
+            request.changeSessionId();
+            clearPreviousIdentityState(session);
+            SessionAccounts.bind(session, user);
+            var authentication = UsernamePasswordAuthenticationToken.authenticated(
+                Long.toString(user.getId()), null,
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+            );
+            var context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(authentication);
+            SecurityContextHolder.setContext(context);
+            contexts.saveContext(context, request, response);
+            session.removeAttribute("org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository.CSRF_TOKEN");
             return "redirect:/dashboard";
         } catch (SQLException | RuntimeException exception) {
-            model.addAttribute("error", exception.getMessage());
+            model.addAttribute("error", "Unable to sign in. Check your credentials or try again later.");
             return "login";
         }
     }
@@ -71,188 +75,35 @@ public class BankingWebController {
     }
 
     @PostMapping("/register")
-    public String register(
-        @RequestParam String fullName,
-        @RequestParam String mobile,
-        @RequestParam String pin,
-        Model model
-    ) {
+    public String register(@RequestParam String fullName, @RequestParam String mobile,
+                           @RequestParam String pin, Model model) {
+        model.addAttribute("mobile", mobile);
         try {
             registrationService.register(fullName, mobile, pin);
             model.addAttribute("success", "Account created. You can sign in now.");
             return "login";
-        } catch (SQLException | RuntimeException exception) {
+        } catch (RegistrationException exception) {
             model.addAttribute("error", exception.getMessage());
-            return "register";
-        }
-    }
-
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-        User user = currentUser(session);
-        if (user == null) {
-            return "redirect:/login";
-        }
-        model.addAttribute("user", user);
-        Object actionError = session.getAttribute(ACTION_ERROR_SESSION_KEY);
-        if (actionError instanceof String message) {
-            model.addAttribute("error", message);
-            session.removeAttribute(ACTION_ERROR_SESSION_KEY);
-        }
-        Object actionSuccess = session.getAttribute(ACTION_SUCCESS_SESSION_KEY);
-        if (actionSuccess instanceof String message) {
-            model.addAttribute("success", message);
-            session.removeAttribute(ACTION_SUCCESS_SESSION_KEY);
-        }
-        try {
-            model.addAttribute("transactions", historyService.getHistory(user));
-        } catch (SQLException exception) {
-            model.addAttribute("error", "Transaction history is temporarily unavailable.");
-        }
-        return "dashboard";
-    }
-
-    @PostMapping("/cash-in")
-    public String cashIn(
-        @RequestParam BigDecimal amount,
-        @RequestParam String details,
-        HttpSession session
-    ) {
-        User user = currentUser(session);
-        if (user == null) {
-            return "redirect:/login";
-        }
-        try {
-            cashInService.cashIn(user, amount, details);
-            session.setAttribute(ACTION_SUCCESS_SESSION_KEY, "Funds were recorded in your ledger.");
         } catch (SQLException | RuntimeException exception) {
-            session.setAttribute(ACTION_ERROR_SESSION_KEY, exception.getMessage());
+            model.addAttribute("error", "Account creation is temporarily unavailable.");
         }
-        return "redirect:/dashboard";
+        model.addAttribute("fullName", fullName);
+        return "register";
     }
 
-    @PostMapping("/transfer/review")
-    public String startTransferReview(
-        @RequestParam String recipient,
-        @RequestParam String amount,
-        HttpSession session
-    ) {
-        User user = currentUser(session);
-        if (user == null) {
-            return "redirect:/login";
+    private void clearPreviousIdentityState(HttpSession session) {
+        for (String attribute : List.of(
+            TransferController.PENDING_ATTRIBUTE,
+            SavingsController.PENDING_ATTRIBUTE,
+            BillPaymentController.PENDING_ATTRIBUTE,
+            MoneyRequestController.PENDING_PAYMENT,
+            CashInTokens.SESSION_ATTRIBUTE,
+            "cashInError", "cashInAmount", "cashInDetails",
+            "transferError", "transferRecipient", "transferAmount",
+            "moneyRequestNotice", "moneyRequestError"
+        )) {
+            session.removeAttribute(attribute);
         }
-        try {
-            session.setAttribute(
-                PENDING_TRANSFER_SESSION_KEY,
-                createPendingTransfer(user, recipient, amount)
-            );
-            return "redirect:/transfer/review";
-        } catch (RuntimeException exception) {
-            session.setAttribute(ACTION_ERROR_SESSION_KEY, exception.getMessage());
-            return "redirect:/dashboard";
-        }
-    }
-
-    @GetMapping("/transfer/review")
-    public String transferReview(HttpSession session, Model model) {
-        User user = currentUser(session);
-        if (user == null) {
-            return "redirect:/login";
-        }
-        PendingTransfer pendingTransfer = pendingTransfer(session);
-        if (pendingTransfer == null) {
-            session.setAttribute(
-                ACTION_ERROR_SESSION_KEY,
-                "Start a transfer before opening its review record."
-            );
-            return "redirect:/dashboard";
-        }
-        model.addAttribute("user", user);
-        model.addAttribute("recipient", pendingTransfer.recipient());
-        model.addAttribute("amount", pendingTransfer.amount());
-        model.addAttribute(
-            "remainingBalance",
-            user.getBalance().subtract(pendingTransfer.amount())
-        );
-        return "transfer-review";
-    }
-
-    @PostMapping("/transfer/confirm")
-    public String confirmTransfer(HttpSession session) {
-        User user = currentUser(session);
-        if (user == null) {
-            return "redirect:/login";
-        }
-        PendingTransfer pendingTransfer = pendingTransfer(session);
-        if (pendingTransfer == null) {
-            session.setAttribute(
-                ACTION_ERROR_SESSION_KEY,
-                "The transfer record is no longer available. Start again from your account desk."
-            );
-            return "redirect:/dashboard";
-        }
-        try {
-            transferService.transfer(user, pendingTransfer.recipient(), pendingTransfer.amount());
-            session.setAttribute(ACTION_SUCCESS_SESSION_KEY, "Transfer recorded in your ledger.");
-        } catch (SQLException | RuntimeException exception) {
-            session.setAttribute(ACTION_ERROR_SESSION_KEY, exception.getMessage());
-        } finally {
-            session.removeAttribute(PENDING_TRANSFER_SESSION_KEY);
-        }
-        return "redirect:/dashboard";
-    }
-
-    @PostMapping("/transfer/cancel")
-    public String cancelTransferReview(HttpSession session) {
-        session.removeAttribute(PENDING_TRANSFER_SESSION_KEY);
-        return "redirect:/dashboard";
-    }
-
-    @PostMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login";
-    }
-
-    private User currentUser(HttpSession session) {
-        Object user = session.getAttribute(USER_SESSION_KEY);
-        return user instanceof User authenticatedUser ? authenticatedUser : null;
-    }
-
-    private PendingTransfer pendingTransfer(HttpSession session) {
-        Object pendingTransfer = session.getAttribute(PENDING_TRANSFER_SESSION_KEY);
-        return pendingTransfer instanceof PendingTransfer request ? request : null;
-    }
-
-    private PendingTransfer createPendingTransfer(User user, String recipient, String rawAmount) {
-        String normalizedRecipient = recipient == null ? "" : recipient.trim();
-        if (normalizedRecipient.isBlank()) {
-            throw new IllegalArgumentException("Recipient mobile number is required.");
-        }
-        if (user.getMobileNumber().equals(normalizedRecipient)) {
-            throw new IllegalArgumentException("You cannot transfer to your own account.");
-        }
-        BigDecimal amount = parseTransferAmount(rawAmount);
-        if (amount.compareTo(user.getBalance()) > 0) {
-            throw new IllegalArgumentException("Transfer amount exceeds your available balance.");
-        }
-        return new PendingTransfer(normalizedRecipient, amount);
-    }
-
-    private BigDecimal parseTransferAmount(String rawAmount) {
-        try {
-            BigDecimal amount = new BigDecimal(rawAmount);
-            if (amount.compareTo(BigDecimal.ZERO) <= 0 || amount.scale() > 2) {
-                throw new IllegalArgumentException(
-                    "Transfer amount must be positive and use no more than two decimals."
-                );
-            }
-            return amount;
-        } catch (NumberFormatException exception) {
-            throw new IllegalArgumentException("Enter a valid transfer amount.");
-        }
-    }
-
-    private record PendingTransfer(String recipient, BigDecimal amount) {
+        SessionFlash.clearActions(session);
     }
 }

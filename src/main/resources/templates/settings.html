@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Review your Nexa Bank account details and PIN settings.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>Account settings | Nexa Bank</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#settings-main">Skip to main content</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('settings')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="settings-main" class="page-content">
+        <div class="page-heading-row"><div><p class="eyebrow">ACCOUNT CONTROLS</p><h1>Settings</h1><p class="muted">Your practice profile and sign-in preferences.</p></div></div>
+        <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
+        <div class="settings-layout">
+          <section class="panel" aria-labelledby="account-details-title">
+            <header class="section-heading">
+              <div>
+                <p class="eyebrow">Your profile</p>
+                <h2 id="account-details-title">Account details</h2>
+              </div>
+            </header>
+            <dl class="settings-details">
+              <div><dt>Account holder</dt><dd th:text="${user.fullName}">Account holder</dd></div>
+              <div><dt>Mobile number</dt><dd th:text="${user.mobileNumber}">09XXXXXXXXX</dd></div>
+              <div><dt>Account number</dt><dd th:text="${user.bankAccount.accountId}">ACC-000</dd></div>
+              <div><dt>Currency</dt><dd>Philippine peso (PHP)</dd></div>
+            </dl>
+            <p class="settings-security-note">These details identify your local simulator account. They do not represent a real bank account.</p>
+          </section>
+
+          <section id="security" class="panel" aria-labelledby="security-title">
+            <header class="section-heading">
+              <div>
+                <p class="eyebrow">Sign-in security</p>
+                <h2 id="security-title">Change your PIN</h2>
+              </div>
+            </header>
+            <form class="form-stack settings-pin-form" method="post" th:action="@{/settings/pin}">
+              <label for="current-pin">Current four-digit PIN</label>
+              <input id="current-pin" name="currentPin" type="password" inputmode="numeric"
+                     autocomplete="current-password" pattern="[0-9]{4}" minlength="4" maxlength="4"
+                     aria-describedby="current-pin-hint" required>
+              <p id="current-pin-hint" class="field-hint">Confirm your current PIN to make this change.</p>
+
+              <label for="new-pin">New four-digit PIN</label>
+              <input id="new-pin" name="newPin" type="password" inputmode="numeric"
+                     autocomplete="new-password" pattern="[0-9]{4}" minlength="4" maxlength="4"
+                     aria-describedby="new-pin-hint" required>
+              <p id="new-pin-hint" class="field-hint">Use a PIN that differs from your current one.</p>
+
+              <label for="confirm-pin">Confirm new PIN</label>
+              <input id="confirm-pin" name="confirmPin" type="password" inputmode="numeric"
+                     autocomplete="new-password" pattern="[0-9]{4}" minlength="4" maxlength="4" required>
+
+              <p class="settings-security-note">Changing your PIN signs out this browser. Other sessions are checked again before their next account action.</p>
+              <button class="button button-primary button-wide" type="submit">Change PIN and sign out</button>
+            </form>
+          </section>
+
+          <section id="verification" class="panel verification-panel" aria-labelledby="verification-title">
+            <header class="section-heading">
+              <div>
+                <p class="eyebrow">Security &amp; verification</p>
+                <h2 id="verification-title">Identity checks are unavailable</h2>
+              </div>
+              <span class="verification-status" role="status">Not connected</span>
+            </header>
+            <p>Nexa cannot confirm your identity or send a one-time code. This local simulator has no SMS, identity-check, or recovery provider.</p>
+            <p class="settings-security-note">Use synthetic details only. Your four-digit practice PIN protects this local demo account; it does not verify your identity.</p>
+            <a class="verification-help-link" th:href="@{/help#security}">Review security and recovery limits</a>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('settings')}"></nav>
+</body>
+</html>

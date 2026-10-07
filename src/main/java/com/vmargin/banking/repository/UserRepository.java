@@ -10,6 +10,14 @@ public interface UserRepository {
 
     Optional<User> findByMobileNumber(String mobileNumber) throws SQLException;
 
+    default Optional<User> findById(long id) throws SQLException {
+        throw new UnsupportedOperationException("Account lookup is not supported");
+    }
+
+    default void updatePin(long id, String expectedPin, String newHash) throws SQLException {
+        throw new UnsupportedOperationException("Credential update is not supported");
+    }
+
     default List<User> findAll() throws SQLException {
         throw new UnsupportedOperationException("Listing users is not supported");
     }

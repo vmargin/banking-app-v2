@@ -22,18 +22,29 @@ public class CashInService {
 
     public BigDecimal cashIn(User user, BigDecimal amount, String details)
         throws SQLException {
+        return cashIn(user, amount, details, java.util.UUID.randomUUID().toString());
+    }
+
+    public BigDecimal cashIn(User user, BigDecimal amount, String details, String reference)
+        throws SQLException {
+        Objects.requireNonNull(user, "User is required");
+        return cashIn(user, user.getBankAccount().getId(), amount, details, reference);
+    }
+
+    public BigDecimal cashIn(User user, long accountId, BigDecimal amount, String details, String reference)
+        throws SQLException {
         Objects.requireNonNull(user, "User is required");
         validateAmount(amount);
         validateDetails(details);
 
-        BigDecimal updatedBalance = repository.cashIn(
+        return repository.cashInAccount(
             user.getId(),
+            accountId,
             amount,
             details,
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            reference
         );
-        user.getBankAccount().deposit(amount);
-        return updatedBalance;
     }
 
     private void validateAmount(BigDecimal amount) {
@@ -45,10 +56,13 @@ public class CashInService {
                 "Cash-in amount cannot have more than 2 decimals"
             );
         }
+        if (amount.compareTo(com.vmargin.banking.util.MoneyValidation.MAXIMUM) > 0) {
+            throw new InvalidCashInException("Cash-in amount exceeds the supported limit");
+        }
     }
 
     private void validateDetails(String details) {
-        if (details == null || details.isBlank()) {
+        if (details == null || details.isBlank() || details.length() > 255) {
             throw new InvalidCashInException("Cash-in details are required");
         }
     }

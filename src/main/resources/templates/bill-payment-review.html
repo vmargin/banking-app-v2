@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Review a simulated bill payment entry.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/app.css">
+  <title>Review demo bill payment | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('payments')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content review-page"><section class="panel review-panel" aria-labelledby="bill-review-title">
+      <p class="eyebrow">Simulation only · expires in five minutes</p>
+      <h1 id="bill-review-title">Review demo bill payment</h1>
+      <p>This will debit your local practice balance and add one activity record. No biller or payment provider is contacted.</p>
+      <dl class="review-details">
+        <div><dt>Demo biller</dt><dd th:text="${pendingBillPayment.payment.biller.displayLabel() + ' · Demo only'}">Demo electricity</dd></div>
+        <div><dt>Synthetic reference</dt><dd th:text="${'Ending ' + pendingBillPayment.payment.referenceLastFour}">Ending 1234</dd></div>
+        <div><dt>Amount</dt><dd th:text="${'₱' + #numbers.formatDecimal(pendingBillPayment.payment.amount, 1, 'COMMA', 2, 'POINT')}">₱0.00</dd></div>
+        <div><dt>Available after confirmation</dt><dd th:text="${'₱' + #numbers.formatDecimal(user.balance.subtract(pendingBillPayment.payment.amount), 1, 'COMMA', 2, 'POINT')}">₱0.00</dd></div>
+      </dl>
+      <form method="post" th:action="@{/bills/confirm}" class="form-stack">
+        <input type="hidden" name="token" th:value="${pendingBillPayment.token}">
+        <button class="button button-primary button-wide" type="submit">Confirm simulated entry</button>
+      </form>
+      <form method="post" th:action="@{/bills/cancel}" class="review-cancel-form">
+        <input type="hidden" name="token" th:value="${pendingBillPayment.token}">
+        <button class="button button-quiet button-wide" type="submit">Cancel and return</button>
+      </form>
+    </section></main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('payments')}"></nav>
+</body>
+</html>

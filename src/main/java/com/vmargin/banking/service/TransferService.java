@@ -22,6 +22,11 @@ public class TransferService {
 
     public BigDecimal transfer(User sender, String recipientMobileNumber, BigDecimal amount)
         throws SQLException {
+        return transfer(sender, recipientMobileNumber, amount, java.util.UUID.randomUUID().toString());
+    }
+
+    public BigDecimal transfer(User sender, String recipientMobileNumber, BigDecimal amount, String reference)
+        throws SQLException {
         Objects.requireNonNull(sender, "Sender is required");
         validateRecipient(sender, recipientMobileNumber);
         validateAmount(amount);
@@ -31,14 +36,26 @@ public class TransferService {
             sender.getMobileNumber(),
             recipientMobileNumber.trim(),
             amount,
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            reference
         );
-        sender.getBankAccount().withdraw(amount);
         return updatedBalance;
     }
 
+    public BigDecimal transferToAccount(User sender, long sourceAccountId, String recipientAccountNumber,
+                                        BigDecimal amount, String reference) throws SQLException {
+        Objects.requireNonNull(sender, "Sender is required");
+        if (sourceAccountId < 1) {
+            throw new InvalidTransferException("Choose an available source account");
+        }
+        AccountService.normalizeAccountNumber(recipientAccountNumber);
+        validateAmount(amount);
+        return repository.transferToAccount(sender.getId(), sourceAccountId, recipientAccountNumber.trim(),
+            amount, LocalDateTime.now(), reference);
+    }
+
     private void validateRecipient(User sender, String recipientMobileNumber) {
-        if (recipientMobileNumber == null || recipientMobileNumber.isBlank()) {
+        if (recipientMobileNumber == null || !recipientMobileNumber.trim().matches("09\\d{9}")) {
             throw new InvalidTransferException("Recipient mobile number is required");
         }
         if (sender.getMobileNumber().equals(recipientMobileNumber.trim())) {
@@ -54,6 +71,9 @@ public class TransferService {
             throw new InvalidTransferException(
                 "Transfer amount cannot have more than 2 decimals"
             );
+        }
+        if (amount.compareTo(com.vmargin.banking.util.MoneyValidation.MAXIMUM) > 0) {
+            throw new InvalidTransferException("Transfer amount exceeds the supported limit");
         }
     }
 }

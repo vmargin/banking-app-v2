@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+  <aside th:fragment="accountRail(activePage)" class="sidebar" aria-label="Nexa Bank navigation">
+    <a class="brand" th:href="@{/dashboard}" aria-label="Nexa Bank home">
+      <img src="/favicon.svg" width="34" height="34" alt="">
+      <span>NEXA <small>BANK</small></span>
+    </a>
+    <p class="sidebar-caption">PERSONAL BANKING</p>
+    <nav th:fragment="mainLinks(activePage)" class="sidebar-nav" aria-label="Main navigation">
+      <a th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? ' is-active' : ''"
+         th:aria-current="${activePage == 'dashboard' ? 'page' : null}">
+        <svg th:replace="~{fragments/icons :: icon('home')}"></svg><span>Dashboard</span>
+      </a>
+      <a th:href="@{/accounts}" th:classappend="${activePage == 'accounts'} ? ' is-active' : ''"
+         th:aria-current="${activePage == 'accounts' ? 'page' : null}">
+        <svg th:replace="~{fragments/icons :: icon('accounts')}"></svg><span>Accounts</span>
+      </a>
+      <a th:href="@{/transfer}" th:classappend="${activePage == 'transfer'} ? ' is-active' : ''"
+         th:aria-current="${activePage == 'transfer' ? 'page' : null}">
+        <svg th:replace="~{fragments/icons :: icon('transfer')}"></svg><span>Transfer</span>
+      </a>
+      <a th:href="@{/payments}" th:classappend="${activePage == 'payments'} ? ' is-active' : ''"
+         th:aria-current="${activePage == 'payments' ? 'page' : null}">
+        <svg th:replace="~{fragments/icons :: icon('bills')}"></svg><span>Pay bills</span>
+      </a>
+      <a th:href="@{/cards}" th:classappend="${activePage == 'cards'} ? ' is-active' : ''"
+         th:aria-current="${activePage == 'cards' ? 'page' : null}">
+        <svg th:replace="~{fragments/icons :: icon('cards')}"></svg><span>Cards</span>
+      </a>
+      <a th:href="@{/savings}" th:classappend="${activePage == 'savings'} ? ' is-active' : ''"
+         th:aria-current="${activePage == 'savings' ? 'page' : null}">
+        <svg th:replace="~{fragments/icons :: icon('savings')}"></svg><span>Savings &amp; goals</span>
+      </a>
+      <a th:href="@{/insights}" th:classappend="${activePage == 'insights'} ? ' is-active' : ''"
+         th:aria-current="${activePage == 'insights' ? 'page' : null}">
+        <svg th:replace="~{fragments/icons :: icon('insights')}"></svg><span>Insights</span>
+      </a>
+      <a th:href="@{/activity}" th:classappend="${activePage == 'activity'} ? ' is-active' : ''"
+         th:aria-current="${activePage == 'activity' ? 'page' : null}">
+        <svg th:replace="~{fragments/icons :: icon('activity')}"></svg><span>Activity</span>
+      </a>
+      <a th:href="@{/notifications}" th:classappend="${activePage == 'notifications'} ? ' is-active' : ''"
+         th:aria-current="${activePage == 'notifications' ? 'page' : null}">
+        <svg th:replace="~{fragments/icons :: icon('bell')}"></svg><span>Notifications</span>
+      </a>
+    </nav>
+    <div th:fragment="utilityLinks(activePage)" class="sidebar-bottom">
+      <a class="sidebar-utility" th:href="@{/help}" th:classappend="${activePage == 'help'} ? ' is-active' : ''"
+         th:aria-current="${activePage == 'help' ? 'page' : null}">
+        <svg th:replace="~{fragments/icons :: icon('help')}"></svg><span>Help &amp; demo guide</span>
+      </a>
+      <a class="sidebar-utility" th:href="@{/settings}" th:classappend="${activePage == 'settings'} ? ' is-active' : ''"
+         th:aria-current="${activePage == 'settings' ? 'page' : null}">
+        <svg th:replace="~{fragments/icons :: icon('settings')}"></svg><span>Settings</span>
+      </a>
+      <div class="sidebar-disclaimer">
+        <span class="status-dot" aria-hidden="true"></span>
+        <p><strong>Practice mode</strong><br><span>No bank or payment network is connected.</span></p>
+      </div>
+      <form method="post" th:action="@{/logout}" class="sidebar-logout">
+        <button type="submit"><svg th:replace="~{fragments/icons :: icon('logout')}"></svg>Log out</button>
+      </form>
+    </div>
+  </aside>
+
+  <header th:fragment="topbar(user)" class="topbar">
+    <div class="topbar-breadcrumb"><span>Nexa Bank</span><span aria-hidden="true">/</span><span>Personal</span></div>
+    <div class="topbar-actions">
+      <form class="global-search" method="get" th:action="@{/activity}" role="search">
+        <label class="sr-only" for="global-search">Search account activity</label>
+        <svg th:replace="~{fragments/icons :: icon('search')}"></svg>
+        <input id="global-search" type="search" name="search" placeholder="Search activity">
+        <kbd aria-hidden="true">/</kbd>
+      </form>
+      <a class="icon-button notification-button" th:href="@{/notifications}" aria-label="Open notifications">
+        <svg th:replace="~{fragments/icons :: icon('bell')}"></svg>
+      </a>
+      <button th:replace="~{fragments/theme-toggle :: themeToggle}"></button>
+      <a class="profile-chip" th:href="@{/settings}" aria-label="Open account settings">
+        <span class="avatar" th:text="${#strings.substring(user.fullName, 0, 1)}">M</span>
+        <span class="profile-copy"><strong th:text="${user.fullName}">Miguel Santos</strong><small>Personal account</small></span>
+        <span class="profile-chevron" aria-hidden="true">⌄</span>
+      </a>
+    </div>
+  </header>
+
+  <nav th:fragment="mobileNav(activePage)" class="mobile-nav" aria-label="Mobile navigation">
+    <a th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? ' is-active' : ''"
+       th:aria-current="${activePage == 'dashboard' ? 'page' : null}"><svg th:replace="~{fragments/icons :: icon('home')}"></svg><small>Home</small></a>
+    <a th:href="@{/accounts}" th:classappend="${activePage == 'accounts'} ? ' is-active' : ''"
+       th:aria-current="${activePage == 'accounts' ? 'page' : null}"><svg th:replace="~{fragments/icons :: icon('accounts')}"></svg><small>Accounts</small></a>
+    <a th:href="@{/transfer}" th:classappend="${activePage == 'transfer'} ? ' is-active' : ''"
+       th:aria-current="${activePage == 'transfer' ? 'page' : null}"><svg th:replace="~{fragments/icons :: icon('transfer')}"></svg><small>Transfer</small></a>
+    <a th:href="@{/activity}" th:classappend="${activePage == 'activity'} ? ' is-active' : ''"
+       th:aria-current="${activePage == 'activity' ? 'page' : null}"><svg th:replace="~{fragments/icons :: icon('activity')}"></svg><small>Activity</small></a>
+    <details class="mobile-menu" th:classappend="${activePage != 'dashboard' and activePage != 'accounts' and activePage != 'transfer' and activePage != 'activity'} ? ' is-active' : ''">
+      <summary><svg th:replace="~{fragments/icons :: icon('more')}"></svg><small>More</small></summary>
+      <section class="mobile-menu-panel" aria-label="All banking sections">
+        <div class="mobile-menu-heading"><h2>Banking sections</h2><button class="button button-quiet" type="button" data-menu-close hidden>Close</button></div>
+        <nav th:replace="~{fragments/account-rail :: mainLinks(${activePage})}"></nav>
+        <div class="mobile-money-links">
+          <a class="sidebar-utility" th:href="@{/cash-in}" th:aria-current="${activePage == 'cash-in' ? 'page' : null}">Add practice money</a>
+          <a class="sidebar-utility" th:href="@{/request}">Request money</a>
+        </div>
+        <div th:replace="~{fragments/account-rail :: utilityLinks(${activePage})}"></div>
+      </section>
+    </details>
+  </nav>
+</body>
+</html>

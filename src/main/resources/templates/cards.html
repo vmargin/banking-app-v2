@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Manage fictional Nexa Bank practice cards.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
+  <title>Cards | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to cards</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('cards')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content">
+        <div class="page-heading-row">
+          <div><p class="eyebrow">YOUR CARDS</p><h1>Keep every card in control.</h1><p class="muted">View, freeze, and change preferences for your practice debit cards.</p></div>
+          <form method="post" th:action="@{/cards}" class="issue-card-form" th:if="${!#lists.isEmpty(eligibleCardAccounts)}">
+            <label class="sr-only" for="issue-card-account">PHP account for new practice card</label>
+            <select id="issue-card-account" name="accountId" required>
+              <option th:each="account : ${eligibleCardAccounts}" th:value="${account.id}" th:text="${account.accountName + ' · ' + account.currencyCode}">Everyday · PHP</option>
+            </select>
+            <button class="button button-primary" type="submit"><span aria-hidden="true">＋</span> Add practice card</button>
+          </form>
+        </div>
+        <div class="alert error" role="alert" th:if="${portfolioError}" th:text="${portfolioError}"></div>
+        <div class="alert success" role="status" th:if="${portfolioNotice}" th:text="${portfolioNotice}"></div>
+        <div class="demo-disclaimer"><span aria-hidden="true">ⓘ</span> These cards are display records. They have no PAN, expiry, CVV, PIN, or payment-network connection.</div>
+
+        <section class="cards-grid" aria-label="Your practice cards" th:if="${cardsAvailable and !#lists.isEmpty(cards)}">
+          <article class="panel card-management" th:each="card : ${cards}">
+            <div class="practice-card-face" th:classappend="${card.isFrozen()} ? ' card-face-frozen' : ''">
+              <div class="practice-card-top"><span class="card-brand-lockup"><img src="/favicon.svg" alt="" width="22" height="22"> NEXA BANK</span><span class="card-network" th:text="${card.brand}">VISA</span></div>
+              <div class="card-chip" aria-label="Decorative card chip"><span></span><i></i></div>
+              <p class="card-number-display" th:text="${'••••  ••••  ••••  ' + card.lastFour}">••••  ••••  ••••  4217</p>
+              <div class="practice-card-bottom"><span><small>ACCOUNT</small><strong th:text="${card.accountName}">Everyday account</strong></span><span><small>TYPE</small><strong th:text="${card.cardType}">DEBIT</strong></span></div>
+              <span class="card-watermark" aria-hidden="true">N</span>
+            </div>
+            <div class="card-management-body">
+              <div class="card-management-title"><div><p class="eyebrow" th:text="${card.brand + ' · ' + card.cardType}">VISA · DEBIT</p><h2 th:text="${card.cardName}">Everyday debit</h2></div>
+                <span class="status-pill" th:classappend="${card.isFrozen()} ? ' status-muted' : ' status-active'" th:text="${card.isFrozen() ? 'FROZEN' : 'ACTIVE'}">ACTIVE</span></div>
+              <dl class="card-meta"><div><dt>Linked account</dt><dd th:text="${card.accountName}">Everyday account</dd></div><div><dt>Last four</dt><dd th:text="${'•••• ' + card.lastFour}">•••• 4217</dd></div></dl>
+              <form method="post" th:action="@{/cards/{id}/limit(id=${card.id})}" class="limit-form">
+                <label th:for="${'daily-limit-' + card.id}">Daily practice limit <span>(PHP)</span></label>
+                <div><span class="input-prefix">₱</span><input th:id="${'daily-limit-' + card.id}" name="amount" type="number" min="0.01" step="0.01" inputmode="decimal" th:value="${card.dailyLimit}" required><button class="button button-secondary" type="submit">Save limit</button></div>
+              </form>
+              <div class="card-control-row">
+                <div><strong>Online payments</strong><small>Saved for the local card record</small></div>
+                <form method="post" th:action="@{/cards/{id}/online(id=${card.id})}">
+                  <input type="hidden" name="enabled" th:value="${!card.onlineEnabled}">
+                  <button class="toggle-button" type="submit" th:classappend="${card.onlineEnabled} ? ' is-on' : ''"
+                          th:attr="aria-label=${card.onlineEnabled ? 'Turn off online payments for ' + card.cardName : 'Turn on online payments for ' + card.cardName}">
+                    <span class="toggle-knob"></span><span class="sr-only" th:text="${card.onlineEnabled ? 'On' : 'Off'}">On</span>
+                  </button>
+                </form>
+              </div>
+              <form method="post" th:action="@{/cards/{id}/freeze(id=${card.id})}" class="freeze-form"
+                    th:if="${!card.isFrozen() or openReplacementByCard[card.id] == null}">
+                <input type="hidden" name="frozen" th:value="${!card.isFrozen()}">
+                <button class="button" th:classappend="${card.isFrozen()} ? ' button-primary' : ' button-danger-quiet'" type="submit"
+                        th:text="${card.isFrozen() ? 'Unfreeze practice card' : 'Freeze practice card'}">Freeze practice card</button>
+              </form>
+              <section class="card-replacement" th:if="${replacementRequestsAvailable and openReplacementByCard[card.id] == null}">
+                <h3>Replace this card</h3>
+                <p>Creates a local service record and freezes the practice card. No card issuer is contacted.</p>
+                <form method="post" th:action="@{/cards/{id}/replacement(id=${card.id})}" class="form-stack compact-form">
+                  <label th:for="${'replacement-reason-' + card.id}">Reason</label>
+                  <select th:id="${'replacement-reason-' + card.id}" name="reason" required>
+                    <option value="LOST">Lost</option><option value="STOLEN">Stolen</option>
+                    <option value="DAMAGED">Damaged</option><option value="EXPIRED">Expired</option>
+                  </select>
+                  <button class="button button-secondary" type="submit">Request replacement</button>
+                </form>
+              </section>
+              <section class="card-replacement card-replacement-open" th:if="${openReplacementByCard[card.id] != null}">
+                <h3>Replacement request open</h3>
+                <p th:text="${'Reason: ' + openReplacementByCard[card.id].reason.label + '. This is stored locally; no replacement was issued.'}">Reason: Lost. This is stored locally; no replacement was issued.</p>
+                <form method="post" th:action="@{/cards/{id}/replacement/cancel(id=${card.id})}">
+                  <button class="button button-quiet" type="submit">Cancel local request</button>
+                </form>
+              </section>
+            </div>
+          </article>
+        </section>
+        <div class="empty-state panel" role="status" th:if="${cardsAvailable and #lists.isEmpty(cards)}">
+          <span class="empty-icon" aria-hidden="true">▰</span><strong>No practice cards yet.</strong><p>Add a card from an active PHP account.</p>
+        </div>
+        <div class="empty-state panel" role="status" th:unless="${cardsAvailable}"><strong>Cards could not be loaded.</strong><p>Your saved card settings have not changed.</p></div>
+        <section class="panel replacement-history" aria-labelledby="replacement-history-title" th:if="${replacementRequestsAvailable and !#lists.isEmpty(replacementRequests)}">
+          <div class="section-heading"><div><p class="eyebrow">LOCAL SERVICE RECORDS</p><h2 id="replacement-history-title">Replacement history</h2></div></div>
+          <ul class="recipient-list">
+            <li th:each="request : ${replacementRequests}">
+              <span class="avatar avatar-small" aria-hidden="true">▰</span>
+              <span><strong th:text="${request.cardName + ' · ' + request.reason.label}">Everyday debit · Lost</strong>
+                <small th:text="${request.status + ' · ' + #temporals.format(request.createdAt, 'MMM d, yyyy') + ' · •••• ' + request.lastFour}">OPEN · Oct 7, 2026 · •••• 4217</small></span>
+            </li>
+          </ul>
+        </section>
+        <p class="field-hint" role="status" th:if="${!replacementRequestsAvailable}">Replacement request records are temporarily unavailable.</p>
+        <footer class="page-footer"><span>Card controls are local demo settings only.</span><a th:href="@{/help}">Learn about simulator limits</a></footer>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('cards')}"></nav>
+</body>
+</html>

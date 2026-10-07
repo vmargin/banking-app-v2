@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Track savings goals in your Nexa Bank practice ledger.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
+  <title>Savings &amp; goals | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to savings goals</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('savings')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content">
+        <div class="page-heading-row"><div><p class="eyebrow">SAVE FOR WHAT MATTERS</p><h1>Small steps. Big plans.</h1><p class="muted">Goals track PHP amounts reserved in the practice ledger.</p></div><span class="goal-page-mark" aria-hidden="true">◇</span></div>
+        <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
+        <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
+        <section class="panel create-goal-panel" aria-labelledby="create-goal-title">
+          <div><p class="eyebrow">A NEW MILESTONE</p><h2 id="create-goal-title">What are you saving for?</h2><p class="muted">Start a target, then move money in or out after review.</p></div>
+          <form method="post" th:action="@{/savings-goals}" class="inline-create-form goal-create-form">
+            <div><label for="goal-name">Goal name</label><input id="goal-name" name="name" maxlength="40" placeholder="e.g. New laptop" required></div>
+            <div><label for="goal-target">Target amount · PHP</label><div class="money-input"><span aria-hidden="true">₱</span><input id="goal-target" name="targetAmount" type="number" min="0.01" max="9999999999999.99" step="0.01" inputmode="decimal" placeholder="0.00" required></div></div>
+            <button class="button button-primary" type="submit">Create goal <span aria-hidden="true">→</span></button>
+          </form>
+        </section>
+        <div class="empty-state panel" role="status" th:if="${!savingsGoalsAvailable}"><strong>Goals are unavailable.</strong><p>Your saved goals and balances have not changed.</p></div>
+        <section class="savings-goal-grid" aria-label="Your savings goals" th:if="${savingsGoalsAvailable and !#lists.isEmpty(savingsGoals)}">
+          <article class="panel savings-goal-card" th:each="goal : ${savingsGoals}">
+            <div class="goal-banner" aria-hidden="true"><span class="goal-banner-sun"></span><span class="goal-banner-mountain mountain-back"></span><span class="goal-banner-mountain mountain-front"></span><span class="goal-banner-label" th:text="${goal.name}">Trip to Japan</span></div>
+            <div class="goal-card-body">
+              <div class="goal-card-heading"><div><p class="eyebrow">YOUR GOAL</p><h2 th:text="${goal.name}">Trip to Japan</h2></div><strong class="goal-percent" th:text="${goal.progressPercent + '%'}">66%</strong></div>
+              <div class="goal-amount-row"><strong th:text="${'₱' + #numbers.formatDecimal(goal.savedAmount, 1, 'COMMA', 2, 'POINT')}">₱80,000.00</strong><span th:text="${'of ₱' + #numbers.formatDecimal(goal.targetAmount, 1, 'COMMA', 2, 'POINT')}">of ₱120,000.00</span></div>
+              <progress class="goal-progress" max="100" th:value="${goal.progressPercent}" th:attr="aria-label=${goal.name + ' progress'}" th:text="${goal.progressPercent + '%'}">66%</progress>
+              <div class="goal-card-actions">
+                <form method="post" th:action="@{/savings/review}" class="goal-move-form">
+                  <input type="hidden" name="goalId" th:value="${goal.id}"><input type="hidden" name="action" value="CONTRIBUTE">
+                  <label th:for="${'add-' + goal.id}">Add to goal</label><div class="money-input"><span aria-hidden="true">₱</span><input th:id="${'add-' + goal.id}" name="amount" type="number" min="0.01" max="9999999999999.99" step="0.01" inputmode="decimal" placeholder="0.00" required><button class="button button-secondary" type="submit">Review</button></div>
+                </form>
+                <form method="post" th:action="@{/savings/review}" class="goal-move-form">
+                  <input type="hidden" name="goalId" th:value="${goal.id}"><input type="hidden" name="action" value="WITHDRAW">
+                  <label th:for="${'take-' + goal.id}">Return to account</label><div class="money-input"><span aria-hidden="true">₱</span><input th:id="${'take-' + goal.id}" name="amount" type="number" min="0.01" max="9999999999999.99" step="0.01" inputmode="decimal" placeholder="0.00" required><button class="button button-quiet" type="submit">Review</button></div>
+                </form>
+              </div>
+            </div>
+          </article>
+        </section>
+        <div class="empty-state panel" role="status" th:if="${savingsGoalsAvailable and #lists.isEmpty(savingsGoals)}"><span class="empty-icon" aria-hidden="true">◇</span><strong>Your next goal starts here.</strong><p>Create a goal and give your savings a direction.</p></div>
+        <div class="demo-disclaimer"><span aria-hidden="true">ⓘ</span> Goal contributions move PHP from your primary practice account into a goal reserve. Withdrawals return it. No interest or external savings product is involved.</div>
+        <footer class="page-footer"><a th:href="@{/dashboard}">← Back to dashboard</a><a th:href="@{/activity}">View goal activity</a></footer>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('savings')}"></nav>
+</body>
+</html>

@@ -1,37 +1,67 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Sign in to the CASH-G educational banking simulator.">
-  <title>Sign in | CASH-G</title>
+  <meta name="theme-color" content="#071321">
+  <meta name="description" content="Sign in to the fictional Nexa Bank practice app.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/css/app.css">
+  <title>Sign in | Nexa Bank</title>
 </head>
-<body class="reference-auth-page">
-  <a class="skip-link" href="#main-content">Skip to sign in</a>
-  <main id="main-content" class="reference-auth-shell">
-    <aside class="reference-auth-rail">
-      <a class="reference-brand" href="/login" aria-label="CASH-G sign in">CASH-G</a>
-      <p>Learn.<br>Practice.<br>Record.</p>
-      <nav class="reference-nav" aria-label="Authentication navigation"><a href="/login" aria-current="page">Sign in</a><a href="/register">Create account</a></nav>
-      <small>Local educational banking simulator</small>
-    </aside>
-    <section class="reference-auth-card" aria-labelledby="signin-title">
-      <p class="reference-kicker">Clear Ledger</p>
-      <h1 id="signin-title">Your balance, clearly.</h1>
-      <p>Use your registered mobile number and four-digit PIN. Never use a real banking PIN.</p>
-      <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
-      <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
-      <form method="post" action="/login" class="reference-auth-form">
-        <label for="mobile">Mobile number</label>
-        <input id="mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="username" pattern="09[0-9]{9}" minlength="11" maxlength="11" placeholder="09XXXXXXXXX" aria-describedby="mobile-hint" required>
-        <p id="mobile-hint" class="reference-input-hint">Use 11 digits, starting with 09.</p>
-        <label for="pin">Four-digit PIN</label>
-        <input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" pattern="[0-9]{4}" minlength="4" maxlength="4" placeholder="••••" aria-describedby="pin-hint" required>
-        <p id="pin-hint" class="reference-input-hint">Use four digits from your local test account.</p>
-        <button class="reference-primary" type="submit">Open account desk <span aria-hidden="true">→</span></button>
-      </form>
-      <p class="reference-auth-switch">New to CASH-G? <a href="/register">Create a local account</a></p>
+<body class="auth-body">
+  <a class="skip-link" href="#signin-title">Skip to sign in</a>
+  <main class="auth-shell">
+    <section class="auth-story">
+      <a class="brand brand-auth" th:href="@{/login}" aria-label="Nexa Bank home">
+        <img src="/favicon.svg" width="38" height="38" alt=""><span>NEXA <small>BANK</small></span>
+      </a>
+      <div class="auth-story-copy">
+        <p class="eyebrow">A SMARTER WAY TO BANK</p>
+        <h1>Make room for<br><span>what’s next.</span></h1>
+        <p class="auth-lede">Everyday banking, made clear.<br>Simple. Secure. Built around you.</p>
+        <div class="auth-benefits">
+          <span><i aria-hidden="true">↯</i> Everyday banking</span>
+          <span><i aria-hidden="true">▥</i> Smarter insights</span>
+          <span><i aria-hidden="true">⌑</i> Safer by design</span>
+        </div>
+      </div>
+      <div class="auth-story-orb auth-orb-one" aria-hidden="true"></div>
+      <div class="auth-story-orb auth-orb-two" aria-hidden="true"></div>
+      <p class="auth-story-note">A fictional banking practice app. No real bank or payment network is connected.</p>
+    </section>
+
+    <section class="auth-form-side" aria-labelledby="signin-title">
+      <div class="auth-card">
+        <div class="auth-preferences"><button th:replace="~{fragments/theme-toggle :: themeToggle}"></button></div>
+        <p class="eyebrow">WELCOME BACK</p>
+        <h2 id="signin-title">Sign in to Nexa.</h2>
+        <p class="auth-intro">Use your local practice account to pick up where you left off.</p>
+        <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
+        <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
+        <form method="post" th:action="@{/login}" class="form-stack">
+          <label for="mobile">Mobile number</label>
+          <input id="mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="username"
+                 th:value="${mobile}"
+                 pattern="09[0-9]{9}" minlength="11" maxlength="11" placeholder="09XXXXXXXXX"
+                 aria-describedby="mobile-hint" required>
+          <p class="field-hint" id="mobile-hint">Enter 11 digits, starting with 09.</p>
+          <label for="pin">Four-digit PIN</label>
+          <div class="pin-field"><input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="current-password"
+                 pattern="[0-9]{4}" minlength="4" maxlength="4" placeholder="••••"
+                 aria-describedby="pin-hint" required><button class="pin-toggle" type="button" data-pin-toggle aria-controls="pin" aria-pressed="false" hidden>Show PIN</button></div>
+          <p class="field-hint" id="pin-hint">This PIN is only for your local practice profile.</p>
+          <button class="button button-primary button-wide" type="submit">Continue <span aria-hidden="true">→</span></button>
+        </form>
+        <div class="auth-demo-box">
+          <span class="demo-box-icon" aria-hidden="true">✦</span>
+          <div><strong>Try the demo</strong><p>Miguel Santos · 09990000001 · PIN 1234</p></div>
+        </div>
+        <p class="auth-switch">New to Nexa? <a th:href="@{/register}">Create a practice account</a></p>
+      </div>
+      <p class="auth-legal">Never use a real banking PIN or real financial information here.</p>
     </section>
   </main>
 </body>

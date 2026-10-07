@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Manage your Nexa Bank practice accounts.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
+  <title>Accounts | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to accounts</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('accounts')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content">
+        <div class="page-heading-row">
+          <div><p class="eyebrow">YOUR NEXA ACCOUNTS</p><h1>Money, with a place for everything.</h1>
+            <p class="muted">Separate balances stay in their own currency. Account numbers belong to this fictional demo.</p></div>
+          <a class="button button-primary" href="#open-account"><span aria-hidden="true">＋</span> Open account</a>
+        </div>
+        <div class="alert error" role="alert" th:if="${portfolioError}" th:text="${portfolioError}"></div>
+        <div class="alert success" role="status" th:if="${portfolioNotice}" th:text="${portfolioNotice}"></div>
+
+        <section class="currency-summary-grid" aria-label="Balance summaries">
+          <article class="panel currency-summary"><span class="account-mark account-mark-primary" aria-hidden="true">₱</span><div><small>Total PHP accounts</small><strong th:text="${'₱' + #numbers.formatDecimal(phpTotal, 1, 'COMMA', 2, 'POINT')}">₱104,850.00</strong></div></article>
+          <article class="panel currency-summary"><span class="account-mark account-mark-usd" aria-hidden="true">$</span><div><small>Total USD accounts</small><strong th:text="${'$' + #numbers.formatDecimal(usdTotal, 1, 'COMMA', 2, 'POINT')}">$1,250.00</strong></div></article>
+        </section>
+
+        <section class="account-page-grid" aria-label="Your accounts" th:if="${accountsAvailable and !#lists.isEmpty(bankAccounts)}">
+          <article class="panel account-detail-card" th:each="account : ${bankAccounts}">
+            <div class="account-detail-head">
+              <span class="account-mark" th:classappend="${account.currencyCode == 'USD'} ? ' account-mark-usd' : (${account.accountType == 'SAVINGS'} ? ' account-mark-savings' : ' account-mark-primary')" aria-hidden="true"
+                    th:text="${account.currencyCode == 'PHP' ? '₱' : '$'}">₱</span>
+              <span class="status-pill" th:classappend="${account.status == 'ACTIVE'} ? ' status-active' : ' status-muted'" th:text="${account.status}">ACTIVE</span>
+            </div>
+            <p class="eyebrow" th:text="${account.accountType == 'FOREIGN_CURRENCY' ? 'FOREIGN CURRENCY' : account.accountType}">CHECKING</p>
+            <h2 th:text="${account.accountName}">Everyday account</h2>
+            <p class="account-detail-balance"><span th:text="${account.currencyCode == 'PHP' ? '₱' : '$'}">₱</span><span th:text="${#numbers.formatDecimal(account.balance, 1, 'COMMA', 2, 'POINT')}">24,850.00</span></p>
+            <dl class="account-meta">
+              <div><dt>Account number</dt><dd><code th:text="${account.accountNumber}">104938271605</code><button class="copy-account" type="button" th:attr="data-copy-value=${account.accountNumber}">Copy account number</button></dd></div>
+              <div><dt>Currency</dt><dd th:text="${account.currencyCode}">PHP</dd></div>
+              <div><dt>Account holder</dt><dd th:text="${account.holderName}">Miguel Santos</dd></div>
+            </dl>
+            <div class="account-detail-actions">
+              <a class="button button-secondary" th:href="@{/activity(accountId=${account.id})}">View activity <span aria-hidden="true">↗</span></a>
+              <a class="button button-quiet" th:if="${account.currencyCode == 'PHP' and account.status == 'ACTIVE'}" th:href="@{/cash-in}">Add demo funds</a>
+            </div>
+          </article>
+        </section>
+        <div class="empty-state panel" role="status" th:if="${!accountsAvailable}"><strong>Accounts are unavailable.</strong><p>Your balances have not changed. Refresh later.</p></div>
+
+        <section id="open-account" class="panel open-account-panel" aria-labelledby="open-account-title">
+          <div class="open-account-copy"><p class="eyebrow">MAKE IT YOURS</p><h2 id="open-account-title">Open a practice account.</h2>
+            <p>New accounts start at zero. The USD account has no conversion, remittance, or external payment feature.</p></div>
+          <form method="post" th:action="@{/accounts}" class="inline-create-form">
+            <div><label for="account-name">Account name</label><input id="account-name" name="name" type="text" maxlength="40" placeholder="e.g. Travel fund" required></div>
+            <div><label for="account-currency">Account currency</label><select id="account-currency" name="currencyCode" required>
+              <option value="PHP">PHP · Savings</option><option value="USD">USD · Demo account</option>
+            </select></div>
+            <button class="button button-primary" type="submit">Open account <span aria-hidden="true">→</span></button>
+          </form>
+        </section>
+        <p class="demo-disclaimer"><span aria-hidden="true">ⓘ</span> Nexa account numbers are fictional 12-digit identifiers for this local app. They cannot receive real transfers.</p>
+        <footer class="page-footer"><span>Balances are practice data only.</span><a th:href="@{/help}">Read the demo guide</a></footer>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('accounts')}"></nav>
+  <script src="/js/dashboard.js" defer></script>
+</body>
+</html>

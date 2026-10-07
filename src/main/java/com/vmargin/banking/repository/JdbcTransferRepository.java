@@ -1,136 +1,102 @@
 package com.vmargin.banking.repository;
 
 import com.vmargin.banking.model.TransactionType;
-import com.vmargin.banking.service.exception.InsufficientBalanceException;
+import com.vmargin.banking.service.exception.InvalidTransferException;
 import com.vmargin.banking.service.exception.RecipientNotFoundException;
 import com.vmargin.banking.util.DatabaseConnection;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class JdbcTransferRepository implements TransferRepository {
-
-    private static final String FIND_RECIPIENT_SQL = """
-        SELECT id
-        FROM users
-        WHERE mobile_number = ?
-        FOR UPDATE
-        """;
-
-    private static final String DEBIT_SENDER_SQL = """
-        UPDATE users
-        SET balance = balance - ?
-        WHERE id = ? AND balance >= ?
-        RETURNING balance
-        """;
-
-    private static final String CREDIT_RECIPIENT_SQL = """
-        UPDATE users
-        SET balance = balance + ?
-        WHERE id = ?
-        """;
-
-    private static final String INSERT_TRANSACTION_SQL = """
-        INSERT INTO transactions (user_id, type, amount, details, occurred_at)
-        VALUES (?, ?, ?, ?, ?)
-        """;
+    @Override
+    public BigDecimal transfer(long senderId, String senderMobile, String recipientMobile,
+                               BigDecimal amount, LocalDateTime occurredAt) throws SQLException {
+        return transfer(senderId, senderMobile, recipientMobile, amount, occurredAt, UUID.randomUUID().toString());
+    }
 
     @Override
-    public BigDecimal transfer(
-        long senderId,
-        String senderMobileNumber,
-        String recipientMobileNumber,
-        BigDecimal amount,
-        LocalDateTime occurredAt
-    ) throws SQLException {
+    public BigDecimal transfer(long senderId, String senderMobile, String recipientMobile,
+                               BigDecimal amount, LocalDateTime occurredAt, String reference) throws SQLException {
+        if (recipientMobile == null || !recipientMobile.matches("09\\d{9}")) {
+            throw new InvalidTransferException("Use a valid demo account recipient");
+        }
         try (Connection connection = DatabaseConnection.open()) {
-            connection.setAutoCommit(false);
-            try {
-                long recipientId = findRecipientId(connection, recipientMobileNumber);
-                BigDecimal senderBalance = debitSender(connection, senderId, amount);
-                creditRecipient(connection, recipientId, amount);
-                insertTransaction(
-                    connection,
-                    senderId,
-                    TransactionType.TRANSFER_SENT,
-                    amount,
-                    "Transfer to " + recipientMobileNumber,
-                    occurredAt
-                );
-                insertTransaction(
-                    connection,
-                    recipientId,
-                    TransactionType.TRANSFER_RECEIVED,
-                    amount,
-                    "Transfer from " + senderMobileNumber,
-                    occurredAt
-                );
-                connection.commit();
-                return senderBalance;
-            } catch (SQLException | RuntimeException exception) {
-                connection.rollback();
-                throw exception;
-            }
+            long sourceId = MoneyWrites.primaryAccountId(connection, senderId);
+            String destinationNumber = primaryAccountNumberForMobile(connection, recipientMobile);
+            return transferToAccount(connection, senderId, sourceId, destinationNumber,
+                amount, occurredAt, reference);
         }
     }
 
-    private long findRecipientId(Connection connection, String mobileNumber)
+    @Override
+    public BigDecimal transferToAccount(long senderId, long sourceAccountId, String recipientAccountNumber,
+                                        BigDecimal amount,
+                                        LocalDateTime occurredAt, String reference) throws SQLException {
+        try (Connection connection = DatabaseConnection.open()) {
+            return transferToAccount(connection, senderId, sourceAccountId,
+                recipientAccountNumber, amount, occurredAt, reference);
+        }
+    }
+
+    private BigDecimal transferToAccount(Connection connection, long senderId, long sourceAccountId,
+                                         String recipientAccountNumber,
+                                         BigDecimal amount, LocalDateTime occurredAt, String reference)
         throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(FIND_RECIPIENT_SQL)) {
-            statement.setString(1, mobileNumber);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (!resultSet.next()) {
+        if (recipientAccountNumber == null || !recipientAccountNumber.matches("[0-9]{12}")) {
+            throw new InvalidTransferException("Enter a 12-digit Nexa demo account number");
+        }
+        long destinationAccountId = accountIdForNumber(connection, recipientAccountNumber);
+        if (sourceAccountId == destinationAccountId) {
+            throw new InvalidTransferException("Choose a different source and recipient account");
+        }
+
+        connection.setAutoCommit(false);
+        try {
+            BigDecimal updatedBalance = MoneyWrites.transfer(connection, senderId, sourceAccountId,
+                destinationAccountId, amount, occurredAt, reference,
+                "Transfer to account ending %s", "Transfer from account ending %s");
+            connection.commit();
+            return updatedBalance;
+        } catch (SQLException | RuntimeException exception) {
+            connection.rollback();
+            throw exception;
+        } finally {
+            connection.setAutoCommit(true);
+        }
+    }
+
+    private String primaryAccountNumberForMobile(Connection connection, String mobile) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement("""
+            SELECT a.account_number FROM users u
+            JOIN accounts a ON a.owner_id = u.id AND a.is_primary = TRUE
+            WHERE u.mobile_number = ?
+            """)) {
+            statement.setString(1, mobile);
+            try (ResultSet result = statement.executeQuery()) {
+                if (!result.next()) {
                     throw new RecipientNotFoundException("Recipient account was not found");
                 }
-                return resultSet.getLong("id");
+                return result.getString(1);
             }
         }
     }
 
-    private BigDecimal debitSender(Connection connection, long senderId, BigDecimal amount)
-        throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(DEBIT_SENDER_SQL)) {
-            statement.setBigDecimal(1, amount);
-            statement.setLong(2, senderId);
-            statement.setBigDecimal(3, amount);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (!resultSet.next()) {
-                    throw new InsufficientBalanceException("Insufficient balance for this transfer");
+    private long accountIdForNumber(Connection connection, String accountNumber) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+            "SELECT id FROM accounts WHERE account_number = ? AND status = 'ACTIVE'")) {
+            statement.setString(1, accountNumber);
+            try (ResultSet result = statement.executeQuery()) {
+                if (!result.next()) {
+                    throw new RecipientNotFoundException("Recipient account was not found");
                 }
-                return resultSet.getBigDecimal("balance");
+                return result.getLong(1);
             }
         }
     }
 
-    private void creditRecipient(Connection connection, long recipientId, BigDecimal amount)
-        throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(CREDIT_RECIPIENT_SQL)) {
-            statement.setBigDecimal(1, amount);
-            statement.setLong(2, recipientId);
-            statement.executeUpdate();
-        }
-    }
-
-    private void insertTransaction(
-        Connection connection,
-        long userId,
-        TransactionType type,
-        BigDecimal amount,
-        String details,
-        LocalDateTime occurredAt
-    ) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_TRANSACTION_SQL)) {
-            statement.setLong(1, userId);
-            statement.setString(2, type.name());
-            statement.setBigDecimal(3, amount);
-            statement.setString(4, details);
-            statement.setTimestamp(5, Timestamp.valueOf(occurredAt));
-            statement.executeUpdate();
-        }
-    }
 }

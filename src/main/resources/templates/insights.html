@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Review monthly PHP practice-ledger insights.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
+  <title>Insights | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to insights</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('insights')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content">
+        <div class="page-heading-row"><div><p class="eyebrow">SPENDING, MADE CLEAR</p><h1>Know where your money goes.</h1><p class="muted">Monthly insights use the PHP activity recorded in your practice ledger.</p></div>
+          <form method="get" th:action="@{/insights}" class="month-picker"><label for="insight-month">Month</label><input id="insight-month" type="month" name="month" th:min="${'0001-01'}" th:max="${currentMonth}" th:value="${selectedMonth}"><button class="button button-secondary" type="submit">Update</button></form></div>
+        <div class="alert error" role="alert" th:if="${monthError}" th:text="${monthError}"></div>
+        <section class="insight-stats-grid" th:if="${insightsAvailable}">
+          <article class="panel insight-stat"><span class="stat-icon stat-in" aria-hidden="true">↙</span><small>Money in</small><strong th:text="${'₱' + #numbers.formatDecimal(insights.moneyInRecorded, 1, 'COMMA', 2, 'POINT')}">₱0.00</strong><span>Cash-in and transfers received</span></article>
+          <article class="panel insight-stat"><span class="stat-icon stat-out" aria-hidden="true">↗</span><small>Spending</small><strong th:text="${'₱' + #numbers.formatDecimal(insights.moneyOutRecorded, 1, 'COMMA', 2, 'POINT')}">₱0.00</strong><span>Card purchases and bills recorded</span></article>
+          <article class="panel insight-stat"><span class="stat-icon stat-savings" aria-hidden="true">◇</span><small>Moved to goals</small><strong th:text="${'₱' + #numbers.formatDecimal(insights.savingsContributed, 1, 'COMMA', 2, 'POINT')}">₱0.00</strong><span>Money reserved in your goal envelopes</span></article>
+          <article class="panel insight-stat"><span class="stat-icon stat-count" aria-hidden="true">≋</span><small>Ledger entries</small><strong th:text="${insights.transactionCount}">0</strong><span th:text="${#temporals.format(insights.month.atDay(1), 'MMMM yyyy')}">October 2026</span></article>
+        </section>
+        <section class="panel insight-breakdown-panel" aria-labelledby="breakdown-title" th:if="${insightsAvailable}">
+          <div class="section-heading"><div><p class="eyebrow">PURCHASES &amp; BILLS</p><h2 id="breakdown-title">Spending by category.</h2></div><span class="currency-tag">PHP</span></div>
+          <div class="insight-breakdown" th:if="${insights.moneyOutRecorded.signum() > 0}">
+            <div class="insight-category-row" th:each="total : ${insights.categoryTotals}" th:if="${total.count > 0}">
+              <span class="category-marker" th:classappend="${total.category.name() == 'FOOD_AND_DINING' ? ' marker-blue' : (total.category.name() == 'SHOPPING' ? ' marker-pink' : (total.category.name() == 'TRANSPORTATION' ? ' marker-violet' : (total.category.name() == 'BILLS_AND_UTILITIES' ? ' marker-lime' : ' marker-other')))}" aria-hidden="true"></span>
+              <div class="category-main"><div><strong th:text="${total.category.displayName()}">Food &amp; dining</strong><span th:text="${total.count + (total.count == 1 ? ' entry' : ' entries')}">4 entries</span></div>
+                <div class="category-track"><progress class="category-progress" max="100"
+                  th:value="${insights.spendingPercentage(total)}"
+                  th:attr="aria-label=${total.category.displayName() + ' share of recorded spending'}" th:text="${insights.spendingPercentage(total) + '%'}">20%</progress></div></div>
+              <strong class="category-total" th:text="${'₱' + #numbers.formatDecimal(total.amount, 1, 'COMMA', 2, 'POINT')}">₱1,104.00</strong>
+            </div>
+          </div>
+          <div class="empty-state" th:if="${insights.moneyOutRecorded.signum() == 0}"><strong>No spending records for this month.</strong><p>Income, account transfers and savings moves remain visible in account activity.</p></div>
+          <div class="insight-footnotes"><span>Account transfers and goal movements are tracked separately from spending.</span><span>Insights use recorded PHP activity, not financial advice.</span></div>
+        </section>
+        <div class="empty-state panel" role="status" th:unless="${insightsAvailable}"><strong>Insights are unavailable.</strong><p>Your account activity has not changed.</p></div>
+        <footer class="page-footer"><a th:href="@{/dashboard}">← Back to dashboard</a><a th:href="@{/activity}">Open activity history</a></footer>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('insights')}"></nav>
+</body>
+</html>

@@ -2,85 +2,60 @@ package com.vmargin.banking.repository;
 
 import com.vmargin.banking.model.TransactionType;
 import com.vmargin.banking.util.DatabaseConnection;
-
+import com.vmargin.banking.util.MoneyValidation;
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class JdbcCashInRepository implements CashInRepository {
-
-    private static final String UPDATE_BALANCE_SQL = """
-        UPDATE users
-        SET balance = balance + ?
-        WHERE id = ?
-        RETURNING balance
-        """;
-
-    private static final String INSERT_TRANSACTION_SQL = """
-        INSERT INTO transactions (user_id, type, amount, details, occurred_at)
-        VALUES (?, ?, ?, ?, ?)
-        """;
+    @Override
+    public BigDecimal cashIn(long userId, BigDecimal amount, String details, LocalDateTime occurredAt)
+        throws SQLException {
+        return cashIn(userId, amount, details, occurredAt, UUID.randomUUID().toString());
+    }
 
     @Override
-    public BigDecimal cashIn(
-        long userId,
-        BigDecimal amount,
-        String details,
-        LocalDateTime occurredAt
-    ) throws SQLException {
+    public BigDecimal cashIn(long userId, BigDecimal amount, String details,
+                             LocalDateTime occurredAt, String reference) throws SQLException {
         try (Connection connection = DatabaseConnection.open()) {
-            connection.setAutoCommit(false);
-            try {
-                BigDecimal updatedBalance = updateBalance(
-                    connection,
-                    userId,
-                    amount
-                );
-                insertTransaction(connection, userId, amount, details, occurredAt);
-                connection.commit();
-                return updatedBalance;
-            } catch (SQLException | RuntimeException exception) {
-                connection.rollback();
-                throw exception;
-            }
+            return cashInAccount(connection, userId, MoneyWrites.primaryAccountId(connection, userId),
+                amount, details, occurredAt, reference);
         }
     }
 
-    private BigDecimal updateBalance(
-        Connection connection,
-        long userId,
-        BigDecimal amount
-    ) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(UPDATE_BALANCE_SQL)) {
-            statement.setBigDecimal(1, amount);
-            statement.setLong(2, userId);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (!resultSet.next()) {
-                    throw new SQLException("User account was not found");
-                }
-                return resultSet.getBigDecimal("balance");
-            }
+    @Override
+    public BigDecimal cashInAccount(long userId, long accountId, BigDecimal amount, String details,
+                                   LocalDateTime occurredAt, String reference) throws SQLException {
+        try (Connection connection = DatabaseConnection.open()) {
+            return cashInAccount(connection, userId, accountId, amount, details, occurredAt, reference);
         }
     }
 
-    private void insertTransaction(
-        Connection connection,
-        long userId,
-        BigDecimal amount,
-        String details,
-        LocalDateTime occurredAt
-    ) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_TRANSACTION_SQL)) {
-            statement.setLong(1, userId);
-            statement.setString(2, TransactionType.CASH_IN.name());
-            statement.setBigDecimal(3, amount);
-            statement.setString(4, details);
-            statement.setTimestamp(5, Timestamp.valueOf(occurredAt));
-            statement.executeUpdate();
+    private BigDecimal cashInAccount(Connection connection, long userId, long accountId, BigDecimal amount,
+                                     String details, LocalDateTime occurredAt, String reference)
+        throws SQLException {
+        MoneyValidation.amount(amount);
+        MoneyValidation.details(details);
+        connection.setAutoCommit(false);
+        try {
+            MoneyWrites.claim(connection, userId, reference, "CASH_IN");
+            MoneyWrites.AccountState account = MoneyWrites.lockAccount(connection, accountId);
+            if (account.ownerId() != userId || !"PHP".equals(account.currencyCode())) {
+                throw new IllegalArgumentException("Choose an eligible PHP account on this customer profile");
+            }
+            BigDecimal balance = account.balance().add(amount);
+            MoneyWrites.balanceAccount(connection, account, balance);
+            MoneyWrites.ledger(connection, userId, accountId, TransactionType.CASH_IN, amount,
+                details, occurredAt, reference);
+            connection.commit();
+            return balance;
+        } catch (SQLException | RuntimeException exception) {
+            connection.rollback();
+            throw exception;
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 }

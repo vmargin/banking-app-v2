@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A receipt from your Nexa Bank account activity.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>Activity receipt | Nexa Bank</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('activity')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content review-page">
+        <div class="page-heading-row"><div><p class="eyebrow">ACCOUNT ACTIVITY</p><h1>Transaction receipt</h1><p class="muted">A recorded entry in your local practice ledger.</p></div></div>
+        <section class="panel receipt-panel" aria-labelledby="receipt-title">
+          <p class="eyebrow">Completed ledger entry</p>
+          <h2 id="receipt-title" th:text="${transaction.type.displayName() + ' receipt'}">Transaction receipt</h2>
+          <p class="receipt-amount"
+             th:classappend="${transaction.type.isIncoming()} ? ' is-incoming' : ' is-outgoing'"
+             th:text="${(transaction.type.isIncoming() ? '+ ' : '− ') + (transaction.currencyCode == 'PHP' ? '₱' : '$') + #numbers.formatDecimal(transaction.amount, 1, 'COMMA', 2, 'POINT')}">+ ₱0.00</p>
+          <dl class="receipt-details">
+            <div><dt>Account</dt><dd th:text="${transaction.accountName}">Practice account</dd></div>
+            <div><dt>Currency</dt><dd th:text="${transaction.currencyCode}">PHP</dd></div>
+            <div><dt>Status</dt><dd>Recorded</dd></div>
+            <div><dt>Activity</dt><dd th:text="${transaction.type.displayName()}">Transfer</dd></div>
+            <div><dt>Date and time</dt><dd><time th:datetime="${transaction.occurredAt}"
+                th:text="${#temporals.format(transaction.occurredAt, 'MMM d, yyyy · h:mm a')}">Today</time></dd></div>
+            <div><dt>Details</dt><dd th:text="${transaction.details}">Activity details</dd></div>
+            <div><dt>Reference</dt><dd class="receipt-reference" th:text="${transaction.reference}">Reference</dd></div>
+          </dl>
+          <p class="receipt-note" th:if="${transaction.type.name() == 'BILL_PAYMENT'}">This is a simulated bill payment record. No biller or payment provider received a payment.</p>
+          <p class="receipt-note" th:unless="${transaction.type.name() == 'BILL_PAYMENT'}">This receipt confirms a ledger record in the Nexa educational simulator.</p>
+          <a class="button button-secondary receipt-back" href="/activity">Back to account activity</a>
+        </section>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('activity')}"></nav>
+</body>
+</html>

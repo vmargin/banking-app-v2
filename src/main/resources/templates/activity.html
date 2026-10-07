@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <script src="/js/theme.js"></script>
+  <script src="/js/ui.js" defer></script>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071321"><meta name="description" content="Search and export account activity from Nexa Bank.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/css/app.css">
+  <title>Activity | Nexa Bank</title>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main-content">Skip to activity</a>
+  <div class="app-shell">
+    <aside th:replace="~{fragments/account-rail :: accountRail('activity')}"></aside>
+    <div class="app-frame">
+      <header th:replace="~{fragments/account-rail :: topbar(${user})}"></header>
+      <main id="main-content" class="page-content">
+        <div class="page-heading-row"><div><p class="eyebrow">YOUR MONEY TRAIL</p><h1>Every entry, in one place.</h1><p class="muted">Filter any account and keep each currency separate.</p></div>
+          <a class="button button-secondary" th:href="@{/statement.csv(type=${filterType}, fromDate=${filterFromDate}, toDate=${filterToDate}, search=${filterSearch}, accountId=${filterAccountId})}">Download CSV <span aria-hidden="true">↓</span></a></div>
+        <div class="alert error" role="alert" th:if="${error}" th:text="${error}"></div>
+        <div class="alert success" role="status" th:if="${success}" th:text="${success}"></div>
+        <section class="panel activity-panel" aria-labelledby="activity-title">
+          <div class="section-heading"><div><p class="eyebrow">ACCOUNT RECORDS</p><h2 id="activity-title">Activity history</h2></div>
+            <span class="results-count" th:if="${activityAvailable}" th:text="${activity.filteredCount + ' entries'}">0 entries</span></div>
+          <form method="get" th:action="@{/activity}" class="activity-filters">
+            <div><label for="filter-account">Account</label><select id="filter-account" name="accountId"><option value="">All accounts</option>
+              <option th:each="account : ${bankAccounts}" th:value="${account.id}" th:selected="${selectedAccountId != null and selectedAccountId == account.id}"
+                      th:text="${account.accountName + ' · ' + account.currencyCode}">Everyday · PHP</option></select></div>
+            <div><label for="filter-type">Activity type</label><select id="filter-type" name="type"><option value="">All types</option>
+              <option th:each="type : ${transactionTypes}" th:value="${type.name()}" th:selected="${filterType == type.name()}" th:text="${type.displayName()}">Card purchase</option></select></div>
+            <div><label for="filter-from">From</label><input id="filter-from" name="fromDate" type="date" th:value="${filterFromDate}"></div>
+            <div><label for="filter-to">To</label><input id="filter-to" name="toDate" type="date" th:value="${filterToDate}"></div>
+            <div class="filter-search"><label for="filter-search">Search</label><input id="filter-search" name="search" type="search" maxlength="100" placeholder="Details or reference" th:value="${filterSearch}"></div>
+            <div class="filter-actions"><button class="button button-primary" type="submit">Apply filters</button><a class="button button-quiet" th:href="@{/activity}">Clear</a></div>
+          </form>
+          <div class="currency-total-list" th:if="${activityAvailable and !#lists.isEmpty(activity.currencyTotals)}" aria-label="Activity totals by currency">
+            <div class="currency-total" th:each="totals : ${activity.currencyTotals}"><span th:text="${totals.currencyCode + ' activity'}">PHP activity</span>
+              <strong><span th:text="${totals.currencyCode == 'PHP' ? '₱' : '$'}">₱</span><span th:text="${#numbers.formatDecimal(totals.incoming, 1, 'COMMA', 2, 'POINT')}">0.00</span> in</strong>
+              <strong><span th:text="${totals.currencyCode == 'PHP' ? '₱' : '$'}">₱</span><span th:text="${#numbers.formatDecimal(totals.outgoing, 1, 'COMMA', 2, 'POINT')}">0.00</span> out</strong>
+            </div>
+          </div>
+          <div class="empty-state" th:if="${activityAvailable and activity.filteredCount == 0 and activity.accountActivityCount == 0}"><strong>No records yet.</strong><p>A confirmed action will appear here with its currency and account.</p></div>
+          <div class="empty-state" th:if="${activityAvailable and activity.filteredCount == 0 and activity.accountActivityCount > 0}"><strong>No activity matches these filters.</strong><p>Change or clear a filter to see other entries.</p></div>
+          <div class="empty-state" role="status" th:unless="${activityAvailable}"><strong>Activity is unavailable.</strong><p>Your ledger data has not changed.</p></div>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable activity table" th:if="${activityAvailable and !#lists.isEmpty(transactions)}">
+            <table class="activity-table">
+              <caption class="sr-only">Account activity, with amounts in each account's currency</caption>
+              <thead><tr><th scope="col">Date</th><th scope="col">Description</th><th scope="col">Category</th><th scope="col">Account</th><th scope="col">Direction</th><th scope="col">Amount</th><th scope="col">Receipt</th></tr></thead>
+              <tbody>
+                <tr th:each="transaction : ${transactions}">
+                  <td><time th:datetime="${transaction.occurredAt}" th:text="${#temporals.format(transaction.occurredAt, 'MMM d, yyyy · h:mm a')}">Oct 7, 2026</time></td>
+                  <td><strong class="table-primary" th:text="${transaction.details}">Salary deposit</strong><small class="table-secondary" th:text="${transaction.type.displayName()}">Cash-in</small></td>
+                  <td th:text="${transaction.category.displayName()}">Income</td>
+                  <td><strong class="table-primary" th:text="${transaction.accountName}">Everyday account</strong><small class="table-secondary" th:text="${transaction.currencyCode}">PHP</small></td>
+                  <td><span class="direction-pill" th:classappend="${transaction.type.isIncoming()} ? ' direction-in' : ' direction-out'" th:text="${transaction.type.isIncoming() ? 'IN' : 'OUT'}">IN</span></td>
+                  <td class="activity-amount" th:classappend="${transaction.type.isIncoming()} ? ' amount-in' : ' amount-out'"
+                      th:text="${(transaction.type.isIncoming() ? '+ ' : '− ') + (transaction.currencyCode == 'PHP' ? '₱' : '$') + #numbers.formatDecimal(transaction.amount, 1, 'COMMA', 2, 'POINT')}">+ ₱30,000.00</td>
+                  <td><a class="table-link" th:if="${transaction.reference != null}" th:href="@{/transactions/receipt/{reference}(reference=${transaction.reference})}">View</a><span th:unless="${transaction.reference != null}" class="muted">—</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <nav class="pagination" th:if="${activityAvailable and activity.totalPages > 1}" aria-label="Activity pages">
+            <a th:if="${activity.hasPrevious}" th:href="@{/activity(page=${activity.page - 1}, pageSize=${activity.pageSize}, accountId=${filterAccountId}, type=${filterType}, fromDate=${filterFromDate}, toDate=${filterToDate}, search=${filterSearch})}">← Previous</a>
+            <span th:text="${'Page ' + (activity.page + 1) + ' of ' + activity.totalPages}">Page 1 of 1</span>
+            <a th:if="${activity.hasNext}" th:href="@{/activity(page=${activity.page + 1}, pageSize=${activity.pageSize}, accountId=${filterAccountId}, type=${filterType}, fromDate=${filterFromDate}, toDate=${filterToDate}, search=${filterSearch})}">Next →</a>
+          </nav>
+          <p class="activity-export-note" th:if="${activityAvailable}">CSV export contains up to 10,000 matching rows. Formula-like text is escaped.</p>
+        </section>
+        <footer class="page-footer"><a th:href="@{/dashboard}">← Back to dashboard</a><a th:href="@{/insights}">Open monthly insights</a></footer>
+      </main>
+    </div>
+  </div>
+  <nav th:replace="~{fragments/account-rail :: mobileNav('activity')}"></nav>
+</body>
+</html>
